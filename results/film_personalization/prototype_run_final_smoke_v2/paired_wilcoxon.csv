@@ -1,0 +1,11 @@
+evaluation,metric,comparison,n_subjects,wilcoxon_statistic,p_value
+real_heldout,subject-mean F1 across k and seeds,FiLM vs Full fine-tune (+2 falls),4,0.0,0.125
+real_heldout,subject-mean F1 across k and seeds,FiLM vs Full fine-tune (ADL-only),4,0.0,0.125
+real_heldout,subject-mean F1 across k and seeds,FiLM vs Global,4,0.0,0.125
+real_heldout,subject-mean F1 across k and seeds,FiLM vs Last-layer fine-tune (+2 falls),4,0.0,0.125
+real_heldout,subject-mean F1 across k and seeds,FiLM vs Last-layer fine-tune (ADL-only),4,0.0,0.125
+simulated_users,subject-mean F1 across k and seeds,FiLM vs Full fine-tune (+2 falls),4,3.0,0.625
+simulated_users,subject-mean F1 across k and seeds,FiLM vs Full fine-tune (ADL-only),4,5.0,1.0
+simulated_users,subject-mean F1 across k and seeds,FiLM vs Global,4,4.0,0.875
+simulated_users,subject-mean F1 across k and seeds,FiLM vs Last-layer fine-tune (+2 falls),4,3.0,0.625
+simulated_users,subject-mean F1 across k and seeds,FiLM vs Last-layer fine-tune (ADL-only),4,4.0,0.875

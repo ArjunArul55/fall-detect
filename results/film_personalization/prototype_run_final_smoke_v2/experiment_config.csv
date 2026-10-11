@@ -1,0 +1,23 @@
+key,value
+seed,42
+calibration_seeds,"[17, 31, 47, 71, 101]"
+calibration_sizes,"[0, 1, 5, 10, 30]"
+epochs,2
+episodes_per_epoch,3
+validation_episodes,2
+patience,1
+fine_tune_epochs,1
+timevae_epochs,0
+sample_rate_hz,20.0
+window_stride_samples,16
+window_stride_seconds,0.8
+positive_fall_calibration_windows,2
+frozen_backbone_parameters,46817
+user_encoder_parameters,24960
+per_user_affine_floats,128
+per_user_affine_bytes,512
+user_profiles_json,"{""High-amp"": {""amplitude_scale"": 1.4, ""bias_std"": 0.0, ""name"": ""High-amp"", ""noise_std"": 0.0, ""rotation_degrees"": 0.0, ""speed_range"": [1.0, 1.0]}, ""Low-amp"": {""amplitude_scale"": 0.6, ""bias_std"": 0.0, ""name"": ""Low-amp"", ""noise_std"": 0.0, ""rotation_degrees"": 0.0, ""speed_range"": [1.0, 1.0]}, ""Noisy"": {""amplitude_scale"": 1.0, ""bias_std"": 0.03, ""name"": ""Noisy"", ""noise_std"": 0.08, ""rotation_degrees"": 0.0, ""speed_range"": [1.0, 1.0]}, ""Normal"": {""amplitude_scale"": 1.0, ""bias_std"": 0.0, ""name"": ""Normal"", ""noise_std"": 0.0, ""rotation_degrees"": 0.0, ""speed_range"": [1.0, 1.0]}, ""Rotated"": {""amplitude_scale"": 1.0, ""bias_std"": 0.04, ""name"": ""Rotated"", ""noise_std"": 0.0, ""rotation_degrees"": 35.0, ""speed_range"": [1.0, 1.0]}, ""Slow"": {""amplitude_scale"": 1.0, ""bias_std"": 0.02, ""name"": ""Slow"", ""noise_std"": 0.0, ""rotation_degrees"": 0.0, ""speed_range"": [0.8, 0.95]}}"
+simulator_backend,parametric
+query_adl_windows_per_episode,32
+query_fall_sampling_ratio,0.08802685565087653
+class_weights_json,"{""0"": 0.5440134278254383, ""1"": 6.180084745762712}"

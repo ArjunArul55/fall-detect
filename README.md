@@ -121,6 +121,35 @@ python scripts/evaluate_recording_level.py
 
 Model outputs are saved under `results/cnn_baseline/` and `results/cnn_lstm_baseline/`.
 
+## FiLM Personalization Prototype
+
+Run the personalized-user experiment without changing the canonical model or split:
+
+```powershell
+.venv\Scripts\python.exe scripts\run_film_personalization.py
+```
+
+The script loads the frozen CNN-LSTM only through `src/keras_model_loading.py`, verifies
+the CNN/LSTM split on 1,000 windows, then meta-trains a zero-initialized FiLM UserEncoder
+on train-subject episodes. It uses the stored 26/6/6 train/validation/test subject split,
+six seeded parametric user profiles, five calibration-sampling seeds, calibration sizes
+0/1/5/10/30, and the existing threshold-sweep operating point. Validation subjects alone
+select the separately reported FiLM threshold. Test subjects are used only for calibration
+and final evaluation, never for meta-training or generator training.
+
+Results are written to a unique run directory under `results/film_personalization/`:
+per-seed user metrics, per-user/per-k mean/std (`per_user_seed_summary.csv`), aggregate
+mean/std, paired Wilcoxon comparisons, F1 and log-scale
+false-alarm plots, meta-training history, run configuration/git revision, a generated
+Markdown summary, and frozen/FiLM TFLite heads. Fine-tuning rows using only ADL calibration
+are labeled separately from variants that additionally calibrate on two held-out fall
+windows. The optional conditional TimeVAE is train-subject-only and enabled with
+`--timevae-epochs N`; it writes channel/SMV/PCA quality checks and train-synthetic-test-real
+metrics. For a lighter run, lower `--epochs` and `--episodes-per-epoch` while retaining
+at least five `--calibration-seeds`. In the current stored test split, two subjects have
+ADL-only windows; their fall-sensitive per-user metrics are recorded as unavailable, not
+as zero, and positive-fall calibration variants are omitted for them.
+
 ## Current Results Snapshot
 
 CNN-LSTM numbers reflect the model weights currently on disk (`results/cnn_lstm_baseline/run_metadata.json`, training commit `6e8b4a96`, 2026-09-13).

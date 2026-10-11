@@ -1,0 +1,123 @@
+{
+  "calibration_seeds": [
+    17,
+    31,
+    47,
+    71,
+    101
+  ],
+  "calibration_sizes": [
+    0,
+    1,
+    5,
+    10,
+    30
+  ],
+  "canonical_threshold": 0.25,
+  "class_weights": {
+    "0": 0.5440134278254383,
+    "1": 6.180084745762712
+  },
+  "command": "\"C:\\Users\\drums\\Desktop\\fall detection project\\.venv\\Scripts\\python.exe\" scripts\\run_film_personalization.py --seed 42 --epochs 2 --episodes-per-epoch 3 --validation-episodes 2 --patience 1 --finetune-epochs 1 --calibration-seeds 17 31 47 71 101 --timevae-epochs 0",
+  "completed_at_utc": "2026-10-03T15:35:43.092768+00:00",
+  "deployment": {
+    "base_tflite_bytes": 194896,
+    "base_tflite_max_abs_error": 5.960464477539063e-08,
+    "channels": 64,
+    "film_tflite_bytes": 197940,
+    "film_tflite_max_abs_error": 0.0,
+    "tflite_overhead_bytes": 3044,
+    "user_affine_bytes": 512
+  },
+  "early_stopping_patience": 1,
+  "episodes_per_epoch": 3,
+  "film_validation_threshold": 0.2,
+  "fine_tune_epochs": 1,
+  "frozen_backbone_parameters": 46817,
+  "generator_quality": null,
+  "git_commit": "96ce0b5f4fc102ca06bdb4bf28e54c14f45f3d1e",
+  "max_epochs": 2,
+  "meta_learning_rate": 0.001,
+  "parameter_count": 24960,
+  "per_user_affine_bytes": 512,
+  "per_user_affine_floats": 128,
+  "positive_fall_calibration_windows": 2,
+  "query_adl_windows_per_episode": 32,
+  "query_fall_sampling_ratio": 0.08802685565087653,
+  "seed": 42,
+  "simulator_backend": "parametric",
+  "summary_rows": 245,
+  "timevae_epochs": 0,
+  "user_profiles": {
+    "High-amp": {
+      "amplitude_scale": 1.4,
+      "bias_std": 0.0,
+      "name": "High-amp",
+      "noise_std": 0.0,
+      "rotation_degrees": 0.0,
+      "speed_range": [
+        1.0,
+        1.0
+      ]
+    },
+    "Low-amp": {
+      "amplitude_scale": 0.6,
+      "bias_std": 0.0,
+      "name": "Low-amp",
+      "noise_std": 0.0,
+      "rotation_degrees": 0.0,
+      "speed_range": [
+        1.0,
+        1.0
+      ]
+    },
+    "Noisy": {
+      "amplitude_scale": 1.0,
+      "bias_std": 0.03,
+      "name": "Noisy",
+      "noise_std": 0.08,
+      "rotation_degrees": 0.0,
+      "speed_range": [
+        1.0,
+        1.0
+      ]
+    },
+    "Normal": {
+      "amplitude_scale": 1.0,
+      "bias_std": 0.0,
+      "name": "Normal",
+      "noise_std": 0.0,
+      "rotation_degrees": 0.0,
+      "speed_range": [
+        1.0,
+        1.0
+      ]
+    },
+    "Rotated": {
+      "amplitude_scale": 1.0,
+      "bias_std": 0.04,
+      "name": "Rotated",
+      "noise_std": 0.0,
+      "rotation_degrees": 35.0,
+      "speed_range": [
+        1.0,
+        1.0
+      ]
+    },
+    "Slow": {
+      "amplitude_scale": 1.0,
+      "bias_std": 0.02,
+      "name": "Slow",
+      "noise_std": 0.0,
+      "rotation_degrees": 0.0,
+      "speed_range": [
+        0.8,
+        0.95
+      ]
+    }
+  },
+  "validation_episodes": 2,
+  "wilcoxon_comparisons": 10,
+  "window_stride_samples": 16,
+  "window_stride_seconds_at_20hz": 0.8
+}
