@@ -1,4 +1,4 @@
-"""Optional class-conditional TimeVAE and synthetic-data quality checks."""
+"""Experimental future TimeVAE path; canonical synthetic users use parametric SisFall shifts."""
 
 from __future__ import annotations
 

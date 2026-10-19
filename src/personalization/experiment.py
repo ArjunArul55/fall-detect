@@ -90,6 +90,7 @@ def _load_arrays() -> dict[str, dict[str, np.ndarray]]:
 
 
 def _threshold_from_metadata() -> float:
+    """Read the canonical 0.25 validation maximum-F2 threshold; 0.20 is sensitivity-only."""
     metadata = json.loads((BASELINE_DIR / "run_metadata.json").read_text(encoding="utf-8"))
     threshold = metadata.get("chosen_threshold", {}).get("threshold")
     if threshold is None:
@@ -510,7 +511,7 @@ def write_summary_from_csvs(output_dir: Path, command: str) -> None:
             f"It has {test_subject_count - adl_only_subject_count} subjects with fall windows and "
             f"{adl_only_subject_count} ADL-only subjects; fall-sensitive metrics are N/A for those ADL-only users.",
             "- User profiles are parametric sensor shifts, not evidence of realistic new-user physiology.",
-            "- The optional TimeVAE can generate fall-labeled windows but does not validate real fall realism.",
+            "- The optional TimeVAE path is future work only; the canonical synthetic users use parametric shifts.",
             "- The last-layer and full fine-tuning baselines with ADL-only calibration have no positive examples.",
         ]
     )

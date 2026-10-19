@@ -1,4 +1,4 @@
-"""FiLM user encoding, episodic meta-training, and inference helpers."""
+"""FiLM helpers: frozen CNN-LSTM, once-trained user encoder, inference-only adaptation."""
 
 from __future__ import annotations
 

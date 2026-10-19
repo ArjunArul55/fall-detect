@@ -325,6 +325,8 @@ def save_severity_artifacts(
     else:
         output_dir = Path(output_dir).expanduser().resolve()
     output_dir.mkdir(parents=True, exist_ok=True)
+    selected_k = int(result.severity_summary["selected_k"])
+    active_severity_labels = severity_label_names(selected_k)
 
     for split, labels in result.severity_labels.items():
         np.save(output_dir / f"{split}_severity_labels.npy", labels)
@@ -335,8 +337,8 @@ def save_severity_artifacts(
     _save_json(
         {
             "cluster_to_severity": {str(k): int(v) for k, v in result.cluster_to_severity.items()},
-            "severity_labels": SEVERITY_LABELS,
-            "note": "Mild/Moderate/Severe severity labels are derived from train-fall-window KMeans clustering of normalized IMU window features. Anomalies are identified by a train-only Isolation Forest and flagged separately."
+            "severity_labels": {str(label): name for label, name in active_severity_labels.items()},
+            "note": f"Severity names correspond to the selected K={selected_k} run. Labels are derived from train-fall-window KMeans clustering of normalized IMU window features. Anomalies are identified by a train-only Isolation Forest and flagged separately."
         },
         output_dir / "severity_mapping.json",
     )

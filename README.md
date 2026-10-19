@@ -8,31 +8,36 @@ The current processed dataset contains 84,123 windows of shape `(64, 6)`: 76,939
 
 - Raw SisFall parsing, metadata construction, filtering, downsampling, subject-wise splitting, normalization, and sliding-window generation are implemented.
 - Fall labels are impact-centered: only windows containing the peak fall impact are labeled as fall.
-- Severity labels are generated for fall windows using unsupervised feature extraction, KMeans clustering, and Isolation Forest anomaly refinement.
+- Canonical severity labels use K=2 run `k2_20260914T055946Z`: Mild, Severe, and Uncertain (-1). Moderate/K=3 is superseded exploration and is not canonical.
 - Two supervised baselines are available: a compact 1D CNN and a compact CNN-LSTM.
-- The current recommended operating point is CNN-LSTM at threshold `0.50`, with 100% recording-level and impact-verified fall recall in the stored evaluation outputs.
+- The headline model-comparison threshold is `0.25`, selected on validation by maximum F2 and applied unchanged to test. `0.50` is a reference point; `0.20` is only a FiLM sensitivity row.
 
-For the full generated report, metrics, artifact inventory, and CSV samples, see [PROJECT_STATUS_REPORT.md](PROJECT_STATUS_REPORT.md).
+For the presentation roadmap, see [docs/PRESENTATION_GUIDE.md](docs/PRESENTATION_GUIDE.md). For the full generated report, metrics, artifact inventory, and CSV samples, see [docs/reports/PROJECT_STATUS_REPORT.md](docs/reports/PROJECT_STATUS_REPORT.md).
 
 ## Repository Layout
 
 ```text
 .
 ├── data/
-│   ├── raw/                         # Optional location for raw SisFall files
-│   └── processed/                   # Generated arrays, reports, plots, severity outputs
-├── reports/                         # Severity comparison reports and figures
+│   ├── raw/SisFall_dataset/         # Downloaded raw SisFall files (local, not tracked)
+│   └── processed/                   # Arrays, scaler, EDA, severity and verification artifacts
+├── docs/
+│   ├── presentation/                # Presentation figures
+│   └── reports/                     # Main report, technical appendix, and generated assets
 ├── results/
-│   ├── cnn_baseline/                # CNN checkpoints, metrics, plots, recording evaluation
-│   └── cnn_lstm_baseline/           # CNN-LSTM checkpoints, metrics, plots, diagnostics
-├── scripts/                         # CLI entry points for data, analysis, and model runs
+│   ├── cnn_baseline/                # CNN checkpoint, metrics, and evaluation
+│   ├── cnn_lstm_baseline/           # CNN-LSTM checkpoint, metrics, and evaluation
+│   └── film_personalization/        # Separate personalization experiment and run outputs
+├── scripts/                         # Runnable preprocessing, training, analysis, and report commands
 ├── src/
-│   └── data/                        # SisFall loader, preprocessing, severity, anomaly modules
-├── tests/                           # Pytest coverage for preprocessing and severity logic
-├── PROJECT_STATUS_REPORT.md
+│   ├── data/                        # SisFall loading, preprocessing, severity, anomaly modules
+│   └── personalization/             # FiLM personalization prototype
+├── tests/                           # Pytest coverage
 ├── requirements.txt
-└── README.md
+└── README.md                        # Setup and command-line entry point
 ```
+
+Keep `data/processed/` and `results/` at these paths: the training, evaluation, and analysis scripts use them as their artifact locations. Reports and figures intended for review are grouped under `docs/`. The workspace hides the large raw dataset, archived severity outputs, and Python environment/cache folders from the Explorer view.
 
 ## Setup
 
@@ -55,14 +60,14 @@ Python dependencies include NumPy, pandas, SciPy, scikit-learn, matplotlib, tqdm
 Download the SisFall dataset from the official source and extract it as:
 
 ```text
-SisFall_dataset/
+data/raw/SisFall_dataset/
 ├── SA01/
 ├── SA02/
 ├── SE01/
 └── ...
 ```
 
-The default preprocessing script expects `SisFall_dataset/` in the repository root. Raw dataset files are not tracked in git.
+The preprocessing scripts expect the dataset at `data/raw/SisFall_dataset/`. Raw dataset files are not tracked in git.
 
 ## Pipeline
 
@@ -98,6 +103,7 @@ python scripts/run_cluster_plots.py
 ```
 
 Severity artifacts are written to `data/processed/severity/`, including refined severity labels, anomaly scores/flags, clustering features, KMeans/Isolation Forest models, CSV reports, and plots.
+The canonical severity scheme is K=2: Mild, Severe, and Uncertain (-1). Moderate/K=3 artifacts are superseded and archived only.
 
 ## Model Training
 
@@ -131,11 +137,16 @@ Run the personalized-user experiment without changing the canonical model or spl
 
 The script loads the frozen CNN-LSTM only through `src/keras_model_loading.py`, verifies
 the CNN/LSTM split on 1,000 windows, then meta-trains a zero-initialized FiLM UserEncoder
-on train-subject episodes. It uses the stored 26/6/6 train/validation/test subject split,
-six seeded parametric user profiles, five calibration-sampling seeds, calibration sizes
-0/1/5/10/30, and the existing threshold-sweep operating point. Validation subjects alone
-select the separately reported FiLM threshold. Test subjects are used only for calibration
-and final evaluation, never for meta-training or generator training.
+on train-subject episodes. The CNN-LSTM backbone is frozen; a small user encoder is trained
+once on simulated users; per-user adaptation at deployment is inference-only (no gradient
+steps). The canonical synthetic-user protocol applies parametric per-channel gain/offset
+transformations to SisFall windows (`x_sim = x * g + b`). It uses the stored 26/6/6
+train/validation/test subject split, five calibration-sampling seeds, and calibration sizes
+0/1/5/10/30. TimeGAN/TimeVAE is future work only, not part of the canonical experiment.
+The headline comparison uses threshold `0.25` for all models, selected by maximum F2 on
+validation and applied unchanged to test. Threshold `0.20` is a FiLM validation-retuned
+sensitivity row only; `0.50` is a reference point only. Test subjects are used only for
+calibration and final evaluation, never for meta-training or generator training.
 
 Results are written to a unique run directory under `results/film_personalization/`:
 per-seed user metrics, per-user/per-k mean/std (`per_user_seed_summary.csv`), aggregate
@@ -143,25 +154,33 @@ mean/std, paired Wilcoxon comparisons, F1 and log-scale
 false-alarm plots, meta-training history, run configuration/git revision, a generated
 Markdown summary, and frozen/FiLM TFLite heads. Fine-tuning rows using only ADL calibration
 are labeled separately from variants that additionally calibrate on two held-out fall
-windows. The optional conditional TimeVAE is train-subject-only and enabled with
-`--timevae-epochs N`; it writes channel/SMV/PCA quality checks and train-synthetic-test-real
-metrics. For a lighter run, lower `--epochs` and `--episodes-per-epoch` while retaining
+windows. Experimental TimeVAE code is future work only and is not part of the canonical
+synthetic-user method; when explicitly explored, it is train-subject-only and enabled with
+`--timevae-epochs N`. For a lighter run, lower `--epochs` and `--episodes-per-epoch` while retaining
 at least five `--calibration-seeds`. In the current stored test split, two subjects have
 ADL-only windows; their fall-sensitive per-user metrics are recorded as unavailable, not
 as zero, and positive-fall calibration variants are omitted for them.
 
-## Current Results Snapshot
+Presentation figures are written to `docs/presentation/figures/personalization/`.
+The separate severity review plots are generated under `docs/presentation/figures/severity/`.
 
-CNN-LSTM numbers reflect the model weights currently on disk (`results/cnn_lstm_baseline/run_metadata.json`, training commit `6e8b4a96`, 2026-09-13).
+## Stored Results Snapshot
 
-| Model | Threshold | Fall precision | Fall recall | Fall F1 | Fall F2 | Recording recall | Impact-verified recall |
-| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
-| CNN | 0.50 | 0.9761 | 0.9867 | 0.9814 | 0.9845 | 0.9967 | 0.9967 |
-| CNN | 0.20 | 0.9683 | 0.9925 | 0.9802 | 0.9876 | 1.0000 | 1.0000 |
-| CNN-LSTM | 0.50 | 0.9770 | 0.9925 | 0.9847 | 0.9894 | 1.0000 | 1.0000 |
-| CNN-LSTM | 0.25 | 0.9606 | 0.9950 | 0.9775 | 0.9879 | 1.0000 | 1.0000 |
+These persisted metrics are a snapshot, not the complete standardized comparison at the
+locked headline threshold. CNN metrics at `0.25` still need to be evaluated in Phase 1.
+The headline threshold for all models is `0.25`; `0.50` rows below are reference results
+only. The CNN-LSTM weights currently on disk are recorded in
+`results/cnn_lstm_baseline/run_metadata.json` (training commit `6e8b4a96`).
 
-Although the validation-selected CNN-LSTM threshold is `0.25`, the project report recommends `0.50` for the current operating point because it keeps 100% recording-level and impact-verified recall while reducing ADL false-trigger recordings.
+| Model | Threshold | Role | Fall precision | Fall recall | Fall F1 | Fall F2 | Recording recall | Impact-verified recall |
+| --- | ---: | --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| CNN | 0.50 | Reference | 0.9761 | 0.9867 | 0.9814 | 0.9845 | 0.9967 | 0.9967 |
+| CNN-LSTM | 0.50 | Reference | 0.9770 | 0.9925 | 0.9847 | 0.9894 | 1.0000 | 1.0000 |
+| CNN-LSTM | 0.25 | Headline | 0.9606 | 0.9950 | 0.9775 | 0.9879 | 1.0000 | 1.0000 |
+
+The CNN-LSTM `0.25` threshold is the validation-selected maximum-F2 point in the stored
+threshold sweep. The `0.20` FiLM validation-retuned result is sensitivity analysis only;
+the project's `0.50` results are reference columns, not the headline comparison.
 
 ## Tests
 
@@ -169,7 +188,7 @@ Although the validation-selected CNN-LSTM threshold is `0.25`, the project repor
 pytest
 ```
 
-The latest recorded verification in the project report was 16 passing tests with one expected synthetic-clustering convergence warning.
+As of 2026-10-19, the verification run passed 31 tests with one expected synthetic-clustering convergence warning. Commit `6e8b4a96` contained 16 collected tests across four test files; commit `f50ac14` added 15 FiLM personalization tests in `tests/test_film_personalization.py`. The total increased by adding tests, not due to a collection/configuration change.
 
 ## Notes
 

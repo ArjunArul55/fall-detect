@@ -48,7 +48,7 @@ def parse_args() -> argparse.Namespace:
 def main() -> None:
     args = parse_args()
     print("[Step 1] Loading and splitting the frozen canonical CNN-LSTM.")
-    print("[Step 2] Using seeded parametric users; TimeVAE is optional.")
+    print("[Step 2] Using seeded parametric users; TimeVAE is experimental future work.")
     print("[Step 3] Meta-training only the UserEncoder on train-subject episodes.")
     print("[Step 4-5] Evaluating held-out users with repeated calibration seeds.")
     reproduction_command = subprocess.list2cmdline(

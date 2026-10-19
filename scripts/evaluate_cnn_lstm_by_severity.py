@@ -21,8 +21,31 @@ from src.keras_model_loading import load_keras_model  # noqa: E402
 
 DATA_DIR = ROOT / "data" / "processed"
 MODEL_PATH = ROOT / "results" / "cnn_lstm_baseline" / "cnn_lstm_best.keras"
+METADATA_PATH = ROOT / "results" / "cnn_lstm_baseline" / "run_metadata.json"
 OUTPUT_DIR = ROOT / "results" / "cnn_lstm_baseline" / "severity_eval"
-THRESHOLD = 0.50
+REFERENCE_THRESHOLD = 0.50
+
+
+def load_validation_threshold(metadata_path: Path = METADATA_PATH) -> float:
+    if not metadata_path.is_file():
+        raise FileNotFoundError(f"CNN-LSTM run metadata not found: {metadata_path}")
+    try:
+        metadata = json.loads(metadata_path.read_text(encoding="utf-8"))
+    except json.JSONDecodeError as exc:
+        raise ValueError(f"CNN-LSTM run metadata is not valid JSON: {metadata_path}") from exc
+    chosen_threshold = metadata.get("chosen_threshold")
+    if not isinstance(chosen_threshold, dict) or "threshold" not in chosen_threshold:
+        raise ValueError(
+            "CNN-LSTM run metadata must contain chosen_threshold.threshold "
+            "selected on validation."
+        )
+    try:
+        threshold = float(chosen_threshold["threshold"])
+    except (TypeError, ValueError) as exc:
+        raise ValueError("The validation-selected threshold must be numeric.") from exc
+    if not np.isfinite(threshold) or not 0.0 <= threshold <= 1.0:
+        raise ValueError(f"The validation-selected threshold must be in [0, 1], got {threshold}.")
+    return threshold
 
 
 def load_cnn_lstm_model(tf, model_path: Path):
@@ -35,7 +58,15 @@ def load_cnn_lstm_model(tf, model_path: Path):
 
 
 def evaluate(severity_dir: Path, output_dir: Path) -> None:
-    arrays = {name: np.load(DATA_DIR / name, allow_pickle=True) for name in ["test.npy", "test_labels.npy", "test_recording_ids.npy", "test_subject_ids.npy"]}
+    arrays = {
+        name: np.load(DATA_DIR / name, allow_pickle=True)
+        for name in [
+            "test.npy",
+            "test_labels.npy",
+            "test_recording_ids.npy",
+            "test_subject_ids.npy",
+        ]
+    }
     refined = np.load(severity_dir / "test_refined_severity_labels.npy")
     lengths = [len(value) for value in [*arrays.values(), refined]]
     if len(set(lengths)) != 1:
@@ -49,15 +80,15 @@ def evaluate(severity_dir: Path, output_dir: Path) -> None:
     tf.config.threading.set_inter_op_parallelism_threads(1)
     model = load_cnn_lstm_model(tf, MODEL_PATH)
     probabilities = model(arrays["test.npy"], training=False).numpy().ravel()
-    predictions = probabilities >= THRESHOLD
     labels = arrays["test_labels.npy"].astype(int)
     recording_ids = arrays["test_recording_ids.npy"].astype(str)
     subject_ids = arrays["test_subject_ids.npy"].astype(str)
     severity_names = load_severity_names(severity_dir)
     present_severities = [-1, *sorted(label for label in severity_names if label >= 0)]
-    rows: list[dict[str, Any]] = []
-    recording_rows: list[dict[str, Any]] = []
-    subject_rows: list[dict[str, Any]] = []
+    threshold_specs = [
+        ("validation_selected", load_validation_threshold()),
+        ("reference_0.50", REFERENCE_THRESHOLD),
+    ]
 
     def has_consecutive_alert(mask: np.ndarray) -> bool:
         positions = np.flatnonzero(mask)
@@ -71,26 +102,19 @@ def evaluate(severity_dir: Path, output_dir: Path) -> None:
         precision = tp / (tp + fp) if tp + fp else 0.0
         recall = tp / (tp + fn) if tp + fn else 0.0
         f1 = 2 * precision * recall / (precision + recall) if precision + recall else 0.0
-        return {"tp": tp, "fp": fp, "fn": fn, "tn": tn, "precision": precision, "recall": recall, "f1": f1}
+        return {
+            "tp": tp,
+            "fp": fp,
+            "fn": fn,
+            "tn": tn,
+            "precision": precision,
+            "recall": recall,
+            "f1": f1,
+        }
 
-    overall_window = binary_metrics(labels == 1, predictions)
-    all_recording_rows: list[dict[str, Any]] = []
-    for recording_id in np.unique(recording_ids):
-        recording_mask = recording_ids == recording_id
-        recording_prediction = predictions[recording_mask]
-        all_recording_rows.append(
-            {
-                "recording_id": recording_id,
-                "subject_id": np.unique(subject_ids[recording_mask])[0],
-                "true_fall_recording": bool(np.any(labels[recording_mask] == 1)),
-                "predicted_positive": bool(np.any(recording_prediction)),
-                "two_consecutive_alert": has_consecutive_alert(recording_prediction),
-            }
-        )
-    all_recordings = pd.DataFrame(all_recording_rows)
-    fall_recordings = all_recordings[all_recordings["true_fall_recording"]]
-
-    def recording_policy_metrics(frame: pd.DataFrame, policy_column: str) -> dict[str, float | int]:
+    def recording_policy_metrics(
+        frame: pd.DataFrame, policy_column: str
+    ) -> dict[str, float | int]:
         fall = frame[frame["true_fall_recording"]]
         adl = frame[~frame["true_fall_recording"]]
         detected = int(fall[policy_column].sum())
@@ -104,46 +128,175 @@ def evaluate(severity_dir: Path, output_dir: Path) -> None:
             "adl_false_trigger_rate": false_positive / len(adl) if len(adl) else 0.0,
         }
 
-    for severity in present_severities:
-        severity_name = severity_names[severity]
-        group = (labels == 1) & (refined == severity)
-        detected = int(np.sum(predictions[group]))
-        total = int(np.sum(group))
-        window_detail = binary_metrics(group, predictions)
-        rows.append({"severity_label": severity, "severity": severity_name, "windows": total, "detected_windows": detected, "window_recall": detected / total if total else 0.0, "window_precision": window_detail["precision"], "window_f1": window_detail["f1"]})
-        group_recordings = np.unique(recording_ids[group])
-        for recording_id in group_recordings:
-            recording_mask = recording_ids == recording_id
-            severity_mask = recording_mask & group
-            recording_rows.append({"severity_label": severity, "severity": severity_name, "recording_id": recording_id, "subject_id": np.unique(subject_ids[recording_mask])[0], "severity_windows": int(severity_mask.sum()), "detected_severity_windows": int(np.sum(predictions[severity_mask])), "recording_detected": bool(np.any(predictions[severity_mask])), "impact_verified": bool(np.any(predictions[severity_mask])), "two_consecutive_alert": has_consecutive_alert(severity_mask & predictions)})
-        for subject_id in np.unique(subject_ids[group]):
-            subject_group = group & (subject_ids == subject_id)
-            count = int(subject_group.sum())
-            subject_rows.append({"severity_label": severity, "severity": severity_name, "subject_id": subject_id, "severity_windows": count, "detected_severity_windows": int(np.sum(predictions[subject_group])), "subject_recall": float(np.sum(predictions[subject_group]) / count) if count else 0.0, "impact_verified": bool(np.any(predictions[subject_group]))})
+    def evaluate_at_threshold(threshold_role: str, threshold: float) -> dict[str, Any]:
+        predictions = probabilities >= threshold
+        overall_window = binary_metrics(labels == 1, predictions)
+        rows: list[dict[str, Any]] = []
+        recording_rows: list[dict[str, Any]] = []
+        subject_rows: list[dict[str, Any]] = []
+        all_recording_rows: list[dict[str, Any]] = []
 
-    recording_frame = pd.DataFrame(recording_rows)
-    subject_frame = pd.DataFrame(subject_rows)
-    recording_summary = recording_frame.groupby(["severity_label", "severity"], as_index=False).agg(recordings=("recording_id", "nunique"), detected_recordings=("recording_detected", "sum"), impact_verified_recordings=("impact_verified", "sum"), two_consecutive_recordings=("two_consecutive_alert", "sum"))
-    subject_summary = subject_frame.groupby(["severity_label", "severity"], as_index=False).agg(subjects=("subject_id", "nunique"), mean_subject_recall=("subject_recall", "mean"), min_subject_recall=("subject_recall", "min"), impact_verified_subjects=("impact_verified", "sum"))
-    summary = {
-        "threshold": THRESHOLD,
-        "severity_dir": str(severity_dir),
-        "window_metrics": rows,
-        "recording_metrics_by_severity": recording_summary.to_dict("records"),
-        "subject_metrics_by_severity": subject_summary.to_dict("records"),
-        "overall_metrics": {"window": overall_window, "recording": recording_policy_metrics(all_recordings, "predicted_positive"), "subject_count": int(all_recordings["subject_id"].nunique()), "impact_verified_recordings": int(fall_recordings["predicted_positive"].sum())},
-        "future_two_consecutive_window_policy": {"status": "analysis_only; default predictions unchanged", "rule": "alert only when two adjacent windows are predicted positive within one recording", "recording": recording_policy_metrics(all_recordings, "two_consecutive_alert")},
-        "generated_at_utc": datetime.now(timezone.utc).isoformat(),
-        "command": " ".join(shlex.quote(part) for part in sys.argv),
+        for recording_id in np.unique(recording_ids):
+            recording_mask = recording_ids == recording_id
+            recording_prediction = predictions[recording_mask]
+            all_recording_rows.append(
+                {
+                    "threshold_role": threshold_role,
+                    "threshold": threshold,
+                    "recording_id": recording_id,
+                    "subject_id": np.unique(subject_ids[recording_mask])[0],
+                    "true_fall_recording": bool(np.any(labels[recording_mask] == 1)),
+                    "predicted_positive": bool(np.any(recording_prediction)),
+                    "two_consecutive_alert": has_consecutive_alert(recording_prediction),
+                }
+            )
+        all_recordings = pd.DataFrame(all_recording_rows)
+        fall_recordings = all_recordings[all_recordings["true_fall_recording"]]
+
+        for severity in present_severities:
+            severity_name = severity_names[severity]
+            group = (labels == 1) & (refined == severity)
+            detected = int(np.sum(predictions[group]))
+            total = int(np.sum(group))
+            window_detail = binary_metrics(group, predictions)
+            rows.append(
+                {
+                    "threshold_role": threshold_role,
+                    "threshold": threshold,
+                    "severity_label": severity,
+                    "severity": severity_name,
+                    "windows": total,
+                    "detected_windows": detected,
+                    "window_recall": detected / total if total else 0.0,
+                    "window_precision": window_detail["precision"],
+                    "window_f1": window_detail["f1"],
+                }
+            )
+            for recording_id in np.unique(recording_ids[group]):
+                recording_mask = recording_ids == recording_id
+                severity_mask = recording_mask & group
+                recording_rows.append(
+                    {
+                        "threshold_role": threshold_role,
+                        "threshold": threshold,
+                        "severity_label": severity,
+                        "severity": severity_name,
+                        "recording_id": recording_id,
+                        "subject_id": np.unique(subject_ids[recording_mask])[0],
+                        "severity_windows": int(severity_mask.sum()),
+                        "detected_severity_windows": int(np.sum(predictions[severity_mask])),
+                        "recording_detected": bool(np.any(predictions[severity_mask])),
+                        "impact_verified": bool(np.any(predictions[severity_mask])),
+                        "two_consecutive_alert": has_consecutive_alert(
+                            severity_mask & predictions
+                        ),
+                    }
+                )
+            for subject_id in np.unique(subject_ids[group]):
+                subject_group = group & (subject_ids == subject_id)
+                count = int(subject_group.sum())
+                subject_rows.append(
+                    {
+                        "threshold_role": threshold_role,
+                        "threshold": threshold,
+                        "severity_label": severity,
+                        "severity": severity_name,
+                        "subject_id": subject_id,
+                        "severity_windows": count,
+                        "detected_severity_windows": int(np.sum(predictions[subject_group])),
+                        "subject_recall": float(np.sum(predictions[subject_group]) / count)
+                        if count
+                        else 0.0,
+                        "impact_verified": bool(np.any(predictions[subject_group])),
+                    }
+                )
+
+        recording_frame = pd.DataFrame(recording_rows)
+        subject_frame = pd.DataFrame(subject_rows)
+        recording_summary = recording_frame.groupby(
+            ["threshold_role", "threshold", "severity_label", "severity"], as_index=False
+        ).agg(
+            recordings=("recording_id", "nunique"),
+            detected_recordings=("recording_detected", "sum"),
+            impact_verified_recordings=("impact_verified", "sum"),
+            two_consecutive_recordings=("two_consecutive_alert", "sum"),
+        )
+        subject_summary = subject_frame.groupby(
+            ["threshold_role", "threshold", "severity_label", "severity"], as_index=False
+        ).agg(
+            subjects=("subject_id", "nunique"),
+            mean_subject_recall=("subject_recall", "mean"),
+            min_subject_recall=("subject_recall", "min"),
+            impact_verified_subjects=("impact_verified", "sum"),
+        )
+        summary = {
+            "threshold_role": threshold_role,
+            "threshold": threshold,
+            "severity_dir": str(severity_dir),
+            "window_metrics": rows,
+            "recording_metrics_by_severity": recording_summary.to_dict("records"),
+            "subject_metrics_by_severity": subject_summary.to_dict("records"),
+            "overall_metrics": {
+                "window": overall_window,
+                "recording": recording_policy_metrics(all_recordings, "predicted_positive"),
+                "subject_count": int(all_recordings["subject_id"].nunique()),
+                "impact_verified_recordings": int(fall_recordings["predicted_positive"].sum()),
+            },
+            "future_two_consecutive_window_policy": {
+                "status": "analysis_only; default predictions unchanged",
+                "rule": "alert only when two adjacent windows are predicted positive within one recording",
+                "recording": recording_policy_metrics(all_recordings, "two_consecutive_alert"),
+            },
+            "generated_at_utc": datetime.now(timezone.utc).isoformat(),
+            "command": " ".join(shlex.quote(part) for part in sys.argv),
+        }
+        return {
+            "summary": summary,
+            "window_metrics": pd.DataFrame(rows),
+            "recording_metrics": recording_frame,
+            "subject_metrics": subject_frame,
+            "overall_recording_metrics": all_recordings,
+            "recording_summary": recording_summary,
+            "subject_summary": subject_summary,
+        }
+
+    results = {
+        role: evaluate_at_threshold(role, threshold) for role, threshold in threshold_specs
     }
+    primary = results["validation_selected"]
+    reference = results["reference_0.50"]
+    summary = dict(primary["summary"])
+    summary["threshold_policy"] = {
+        "headline": "validation-selected max-F2 threshold, applied unchanged to test",
+        "reference_threshold": REFERENCE_THRESHOLD,
+    }
+    summary["reference_threshold_results"] = reference["summary"]
+
+    def combine_results(key: str) -> pd.DataFrame:
+        return pd.concat([result[key] for result in results.values()], ignore_index=True)
+
     output_dir.mkdir(parents=True, exist_ok=True)
-    pd.DataFrame(rows).to_csv(output_dir / "window_metrics_by_severity.csv", index=False)
-    recording_frame.to_csv(output_dir / "recording_metrics_by_severity.csv", index=False)
-    subject_frame.to_csv(output_dir / "subject_metrics_by_severity.csv", index=False)
-    all_recordings.to_csv(output_dir / "overall_recording_metrics.csv", index=False)
-    recording_summary.to_csv(output_dir / "recording_summary_by_severity.csv", index=False)
-    subject_summary.to_csv(output_dir / "subject_summary_by_severity.csv", index=False)
-    (output_dir / "evaluation_summary.json").write_text(json.dumps(summary, indent=2), encoding="utf-8")
+    combine_results("window_metrics").to_csv(
+        output_dir / "window_metrics_by_severity.csv", index=False
+    )
+    combine_results("recording_metrics").to_csv(
+        output_dir / "recording_metrics_by_severity.csv", index=False
+    )
+    combine_results("subject_metrics").to_csv(
+        output_dir / "subject_metrics_by_severity.csv", index=False
+    )
+    combine_results("overall_recording_metrics").to_csv(
+        output_dir / "overall_recording_metrics.csv", index=False
+    )
+    combine_results("recording_summary").to_csv(
+        output_dir / "recording_summary_by_severity.csv", index=False
+    )
+    combine_results("subject_summary").to_csv(
+        output_dir / "subject_summary_by_severity.csv", index=False
+    )
+    (output_dir / "evaluation_summary.json").write_text(
+        json.dumps(summary, indent=2), encoding="utf-8"
+    )
 
 
 if __name__ == "__main__":
