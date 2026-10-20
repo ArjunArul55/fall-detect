@@ -1,0 +1,33 @@
+{
+  "variant": "dynamic_range",
+  "threshold": 0.1,
+  "input_scale": 0.0,
+  "input_zero_point": 0,
+  "output_scale": 0.0,
+  "output_zero_point": 0,
+  "window_shape": [
+    64,
+    6
+  ],
+  "stride": 16,
+  "sampling_frequency_hz": 20,
+  "scaler_path": "data/processed/scaler.pkl",
+  "size_bytes": 113704,
+  "size_kb": 111.0390625,
+  "metrics": {
+    "accuracy": 0.9510530564320834,
+    "precision": 0.9478991596638655,
+    "recall": 0.47,
+    "f1": 0.6284122562674095,
+    "f2": 0.5227062094531975,
+    "fa_per_hour": 11.225557254365494,
+    "auroc": 0.8694626619457632,
+    "agreement_pct": 99.97064651060394,
+    "max_abs_diff": 0.033720970153808594,
+    "mean_abs_diff": 9.81215198407881e-05,
+    "latency_median_ms": 0.025400000595254824,
+    "latency_p95_ms": 0.034404999996695544
+  },
+  "git_commit": "f4112df",
+  "generated_at_utc": "2026-10-20T16:50:46.280700+00:00"
+}
