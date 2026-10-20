@@ -29,11 +29,13 @@ from src.personalization.simulator import (
     assert_subject_disjoint,
     split_user_calibration,
 )
+import pytest
 
 
 ROOT = Path(__file__).resolve().parents[1]
 PROCESSED = ROOT / "data" / "processed"
 CANONICAL_MODEL = ROOT / "results" / "cnn_lstm_baseline" / "cnn_lstm_best.keras"
+HAS_TRAIN_NPY = (PROCESSED / "train.npy").exists()
 
 
 def _load_components():
@@ -44,6 +46,7 @@ def _load_components():
     return split_frozen_model(model, windows)
 
 
+@pytest.mark.skipif(not HAS_TRAIN_NPY, reason="train.npy not present in local processed directory")
 def test_frozen_model_split_matches_original_and_freezes_weights():
     components = _load_components()
     assert components.feature_shape == (16, 64)
@@ -54,6 +57,7 @@ def test_frozen_model_split_matches_original_and_freezes_weights():
     assert all(not variable.trainable for variable in components.head.weights)
 
 
+@pytest.mark.skipif(not HAS_TRAIN_NPY, reason="train.npy not present in local processed directory")
 def test_subject_ids_are_disjoint_and_aligned_with_windows():
     subject_sets = {}
     for split in ("train", "val", "test"):
@@ -319,6 +323,7 @@ def test_baseline_fine_tuning_runs_without_changing_source_model():
     )
 
 
+@pytest.mark.skipif(not HAS_TRAIN_NPY, reason="train.npy not present in local processed directory")
 def test_film_identity_initialization_matches_frozen_model_for_k_zero_and_nonzero():
     import tensorflow as tf
 
@@ -349,6 +354,7 @@ def test_user_encoder_k_zero_path_returns_finite_identity_parameters():
     assert encoder.z0.trainable
 
 
+@pytest.mark.skipif(not HAS_TRAIN_NPY, reason="train.npy not present in local processed directory")
 def test_meta_training_updates_encoder_only_with_disjoint_train_and_validation_subjects():
     components = _load_components()
     train_x = np.load(PROCESSED / "train.npy", mmap_mode="r")
