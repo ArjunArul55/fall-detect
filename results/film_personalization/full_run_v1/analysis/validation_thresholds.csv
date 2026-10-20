@@ -1,0 +1,61 @@
+meta_seed,model,k,validation_threshold,validation_f1,validation_f2,validation_false_alarms_per_hour,threshold_selection,validation_sampling_seeds,rows_validation_calibrated
+42,Global,0,0.25,0.973202614379085,0.9847883597883598,23.855745538714253,"pooled validation users/seeds; max F2, then lower FA/hr",17;31;47;71;101,True
+42,Last-layer FT (ADL-only),0,0.25,0.973202614379085,0.9847883597883598,23.855745538714253,"pooled validation users/seeds; max F2, then lower FA/hr",17;31;47;71;101,True
+42,Full FT (ADL-only),0,0.25,0.973202614379085,0.9847883597883598,23.855745538714253,"pooled validation users/seeds; max F2, then lower FA/hr",17;31;47;71;101,True
+42,FiLM,0,0.6,0.9777252119061699,0.9862403563190965,18.74860001493317,"pooled validation users/seeds; max F2, then lower FA/hr",17;31;47;71;101,True
+42,Global,1,0.25,0.973202614379085,0.9847883597883598,23.855745538714253,"pooled validation users/seeds; max F2, then lower FA/hr",17;31;47;71;101,True
+42,Last-layer FT (ADL-only),1,0.25,0.973453641951092,0.9848124040853046,23.51974912267602,"pooled validation users/seeds; max F2, then lower FA/hr",17;31;47;71;101,True
+42,Full FT (ADL-only),1,0.25,0.9736480742823515,0.9849707617812823,23.385350556260732,"pooled validation users/seeds; max F2, then lower FA/hr",17;31;47;71;101,True
+42,FiLM,1,0.2,0.9590590070184559,0.9737911739864865,34.2044351526917,"pooled validation users/seeds; max F2, then lower FA/hr",17;31;47;71;101,True
+42,Global,5,0.25,0.973202614379085,0.9847883597883598,23.855745538714253,"pooled validation users/seeds; max F2, then lower FA/hr",17;31;47;71;101,True
+42,Last-layer FT (ADL-only),5,0.3,0.9750819672131148,0.9847682119205298,21.16777421040842,"pooled validation users/seeds; max F2, then lower FA/hr",17;31;47;71;101,True
+42,Full FT (ADL-only),5,0.25,0.973453641951092,0.9848124040853046,23.51974912267602,"pooled validation users/seeds; max F2, then lower FA/hr",17;31;47;71;101,True
+42,FiLM,5,0.55,0.9723894268516096,0.9833527419013339,23.72134697229896,"pooled validation users/seeds; max F2, then lower FA/hr",17;31;47;71;101,True
+42,Global,10,0.25,0.973202614379085,0.9847883597883598,23.855745538714253,"pooled validation users/seeds; max F2, then lower FA/hr",17;31;47;71;101,True
+42,Last-layer FT (ADL-only),10,0.3,0.9752098635886673,0.984820387835117,21.03337564399313,"pooled validation users/seeds; max F2, then lower FA/hr",17;31;47;71;101,True
+42,Full FT (ADL-only),10,0.25,0.9733865167069902,0.9847061625168682,23.51974912267602,"pooled validation users/seeds; max F2, then lower FA/hr",17;31;47;71;101,True
+42,FiLM,10,0.55,0.9735463593504453,0.9840622683469237,22.713357724184274,"pooled validation users/seeds; max F2, then lower FA/hr",17;31;47;71;101,True
+42,Global,30,0.25,0.973202614379085,0.9847883597883598,23.855745538714253,"pooled validation users/seeds; max F2, then lower FA/hr",17;31;47;71;101,True
+42,Last-layer FT (ADL-only),30,0.3,0.9752098635886673,0.984820387835117,21.03337564399313,"pooled validation users/seeds; max F2, then lower FA/hr",17;31;47;71;101,True
+42,Full FT (ADL-only),30,0.3,0.975018031604485,0.9847421260363964,21.234973493616067,"pooled validation users/seeds; max F2, then lower FA/hr",17;31;47;71;101,True
+42,FiLM,30,0.65,0.9774475639424025,0.9855737357129598,18.547002165310232,"pooled validation users/seeds; max F2, then lower FA/hr",17;31;47;71;101,True
+43,Global,0,0.25,0.973202614379085,0.9847883597883598,23.855745538714253,"pooled validation users/seeds; max F2, then lower FA/hr",17;31;47;71;101,True
+43,Last-layer FT (ADL-only),0,0.25,0.973202614379085,0.9847883597883598,23.855745538714253,"pooled validation users/seeds; max F2, then lower FA/hr",17;31;47;71;101,True
+43,Full FT (ADL-only),0,0.25,0.973202614379085,0.9847883597883598,23.855745538714253,"pooled validation users/seeds; max F2, then lower FA/hr",17;31;47;71;101,True
+43,FiLM,0,0.65,0.9777252119061699,0.9862403563190965,18.74860001493317,"pooled validation users/seeds; max F2, then lower FA/hr",17;31;47;71;101,True
+43,Global,1,0.25,0.973202614379085,0.9847883597883598,23.855745538714253,"pooled validation users/seeds; max F2, then lower FA/hr",17;31;47;71;101,True
+43,Last-layer FT (ADL-only),1,0.25,0.9734571129707112,0.9848925812255265,23.586948405883668,"pooled validation users/seeds; max F2, then lower FA/hr",17;31;47;71;101,True
+43,Full FT (ADL-only),1,0.25,0.9736480742823515,0.9849707617812823,23.385350556260732,"pooled validation users/seeds; max F2, then lower FA/hr",17;31;47;71;101,True
+43,FiLM,1,0.75,0.970714564623194,0.9847884645856441,27.417307548719478,"pooled validation users/seeds; max F2, then lower FA/hr",17;31;47;71;101,True
+43,Global,5,0.25,0.973202614379085,0.9847883597883598,23.855745538714253,"pooled validation users/seeds; max F2, then lower FA/hr",17;31;47;71;101,True
+43,Last-layer FT (ADL-only),5,0.3,0.9751459112072923,0.9847942991867334,21.100574927200775,"pooled validation users/seeds; max F2, then lower FA/hr",17;31;47;71;101,True
+43,Full FT (ADL-only),5,0.25,0.973453641951092,0.9848124040853046,23.51974912267602,"pooled validation users/seeds; max F2, then lower FA/hr",17;31;47;71;101,True
+43,FiLM,5,0.7,0.9696182809659829,0.985120303925707,29.29888747853356,"pooled validation users/seeds; max F2, then lower FA/hr",17;31;47;71;101,True
+43,Global,10,0.25,0.973202614379085,0.9847883597883598,23.855745538714253,"pooled validation users/seeds; max F2, then lower FA/hr",17;31;47;71;101,True
+43,Last-layer FT (ADL-only),10,0.3,0.9751459112072923,0.9847942991867334,21.100574927200775,"pooled validation users/seeds; max F2, then lower FA/hr",17;31;47;71;101,True
+43,Full FT (ADL-only),10,0.25,0.973453641951092,0.9848124040853046,23.51974912267602,"pooled validation users/seeds; max F2, then lower FA/hr",17;31;47;71;101,True
+43,FiLM,10,0.8,0.9746172968729556,0.9856825279203938,22.64615844097663,"pooled validation users/seeds; max F2, then lower FA/hr",17;31;47;71;101,True
+43,Global,30,0.25,0.973202614379085,0.9847883597883598,23.855745538714253,"pooled validation users/seeds; max F2, then lower FA/hr",17;31;47;71;101,True
+43,Last-layer FT (ADL-only),30,0.3,0.9752098635886673,0.984820387835117,21.03337564399313,"pooled validation users/seeds; max F2, then lower FA/hr",17;31;47;71;101,True
+43,Full FT (ADL-only),30,0.3,0.9750819672131148,0.9847682119205298,21.16777421040842,"pooled validation users/seeds; max F2, then lower FA/hr",17;31;47;71;101,True
+43,FiLM,30,0.7,0.9725153054578611,0.9861573413641888,26.073321884566568,"pooled validation users/seeds; max F2, then lower FA/hr",17;31;47;71;101,True
+44,Global,0,0.25,0.973202614379085,0.9847883597883598,23.855745538714253,"pooled validation users/seeds; max F2, then lower FA/hr",17;31;47;71;101,True
+44,Last-layer FT (ADL-only),0,0.25,0.973202614379085,0.9847883597883598,23.855745538714253,"pooled validation users/seeds; max F2, then lower FA/hr",17;31;47;71;101,True
+44,Full FT (ADL-only),0,0.25,0.973202614379085,0.9847883597883598,23.855745538714253,"pooled validation users/seeds; max F2, then lower FA/hr",17;31;47;71;101,True
+44,FiLM,0,0.75,0.9752747252747253,0.9864242616703716,22.377361308146046,"pooled validation users/seeds; max F2, then lower FA/hr",17;31;47;71;101,True
+44,Global,1,0.25,0.973202614379085,0.9847883597883598,23.855745538714253,"pooled validation users/seeds; max F2, then lower FA/hr",17;31;47;71;101,True
+44,Last-layer FT (ADL-only),1,0.25,0.9735207584177836,0.9849186400317502,23.51974912267602,"pooled validation users/seeds; max F2, then lower FA/hr",17;31;47;71;101,True
+44,Full FT (ADL-only),1,0.3,0.975347495410438,0.9851133714770078,21.100574927200775,"pooled validation users/seeds; max F2, then lower FA/hr",17;31;47;71;101,True
+44,FiLM,1,0.85,0.9637756426902103,0.9791842549598987,32.32285522287762,"pooled validation users/seeds; max F2, then lower FA/hr",17;31;47;71;101,True
+44,Global,5,0.25,0.973202614379085,0.9847883597883598,23.855745538714253,"pooled validation users/seeds; max F2, then lower FA/hr",17;31;47;71;101,True
+44,Last-layer FT (ADL-only),5,0.3,0.9751459112072923,0.9847942991867334,21.100574927200775,"pooled validation users/seeds; max F2, then lower FA/hr",17;31;47;71;101,True
+44,Full FT (ADL-only),5,0.25,0.974147522743635,0.9849387225707403,22.64615844097663,"pooled validation users/seeds; max F2, then lower FA/hr",17;31;47;71;101,True
+44,FiLM,5,0.9,0.971999216761308,0.9843737606091854,25.19973120286717,"pooled validation users/seeds; max F2, then lower FA/hr",17;31;47;71;101,True
+44,Global,10,0.25,0.973202614379085,0.9847883597883598,23.855745538714253,"pooled validation users/seeds; max F2, then lower FA/hr",17;31;47;71;101,True
+44,Last-layer FT (ADL-only),10,0.3,0.9752098635886673,0.984820387835117,21.03337564399313,"pooled validation users/seeds; max F2, then lower FA/hr",17;31;47;71;101,True
+44,Full FT (ADL-only),10,0.2,0.9731956066945606,0.9846280029632766,23.72134697229896,"pooled validation users/seeds; max F2, then lower FA/hr",17;31;47;71;101,True
+44,FiLM,10,0.9,0.9732732144024048,0.9849747374546993,23.9229448219219,"pooled validation users/seeds; max F2, then lower FA/hr",17;31;47;71;101,True
+44,Global,30,0.25,0.973202614379085,0.9847883597883598,23.855745538714253,"pooled validation users/seeds; max F2, then lower FA/hr",17;31;47;71;101,True
+44,Last-layer FT (ADL-only),30,0.3,0.9752098635886673,0.984820387835117,21.03337564399313,"pooled validation users/seeds; max F2, then lower FA/hr",17;31;47;71;101,True
+44,Full FT (ADL-only),30,0.15,0.9720065252854813,0.9845340383344349,25.33412976928246,"pooled validation users/seeds; max F2, then lower FA/hr",17;31;47;71;101,True
+44,FiLM,30,0.9,0.9742784213626546,0.9850710712300484,22.578959157768985,"pooled validation users/seeds; max F2, then lower FA/hr",17;31;47;71;101,True

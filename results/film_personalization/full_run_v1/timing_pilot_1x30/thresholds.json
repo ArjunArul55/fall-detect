@@ -1,0 +1,4 @@
+{
+  "canonical_threshold_from_existing_sweep": 0.25,
+  "film_threshold_tuned_on_validation_only": 0.85
+}

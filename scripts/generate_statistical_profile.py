@@ -24,7 +24,7 @@ from src.data.sisfall_preprocessing import (
 from src.data.sisfall_loader import discover_subject_directories
 
 PROCESSED = ROOT / "data" / "processed"
-DATASET = ROOT / "SisFall_dataset"
+DATASET = ROOT / "data" / "raw" / "SisFall_dataset"
 OUTPUT = PROCESSED / "STATISTICAL_PROFILE.md"
 
 SPLITS = ["train", "val", "test"]
@@ -207,7 +207,7 @@ def main() -> None:
         "| Section | Source | Method |",
         "| --- | --- | --- |",
         "| Overview counts | `*.npy`, `*_recording_ids.npy`, `*_subject_ids.npy` | `np.load`, unique counts |",
-        "| Demographics | `SisFall_dataset/Readme.txt` subject table | Joined by `subject_id` per split |",
+        "| Demographics | `data/raw/SisFall_dataset/Readme.txt` subject table | Joined by `subject_id` per split |",
         "| Recording duration | SisFall `*.txt` files | Line count / 10 downsampling / 20 Hz |",
         "| Signal stats (raw) | Normalized windows + `scaler.pkl` | `scaler.inverse_transform` on flattened timesteps |",
         "| Magnitude stats | Normalized windows | `max_t sqrt(sum(channel^2))` per window |",

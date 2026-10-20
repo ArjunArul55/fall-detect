@@ -23,7 +23,8 @@ htmlcov/
 .ipynb_checkpoints/
 
 # IDE
-.vscode/
+.vscode/*
+!.vscode/settings.json
 .idea/
 *.swp
 *.swo
@@ -34,7 +35,7 @@ Thumbs.db
 
 # Raw dataset (download separately; too large for GitHub)
 SisFall_dataset/
-data/raw/*
+data/raw/SisFall_dataset/
 !data/raw/.gitkeep
 
 # Generated processed arrays and model artifacts (regenerate via scripts)

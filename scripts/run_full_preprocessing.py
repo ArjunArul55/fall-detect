@@ -21,7 +21,7 @@ from src.data.sisfall_preprocessing import (
 if __name__ == "__main__":
     import gc
 
-    root = Path("SisFall_dataset")
+    root = ROOT / "data" / "raw" / "SisFall_dataset"
     master_df = build_master_dataframe(dataset_root=root, show_progress=False)
     print("master shape", master_df.shape)
 

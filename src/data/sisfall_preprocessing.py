@@ -151,7 +151,7 @@ def build_master_dataframe(
     """Merge every SisFall activity file into one master DataFrame."""
 
     if dataset_root is None:
-        dataset_root = Path(__file__).resolve().parents[2] / "SisFall_dataset"
+        dataset_root = Path(__file__).resolve().parents[2] / "data" / "raw" / "SisFall_dataset"
     else:
         dataset_root = Path(dataset_root).expanduser().resolve()
 

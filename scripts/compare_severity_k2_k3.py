@@ -26,7 +26,7 @@ from src.data.severity_labeling import extract_window_features, fit_feature_scal
 PROJECT_ROOT = REPO_ROOT
 PROCESSED_DIR = PROJECT_ROOT / "data" / "processed"
 SEVERITY_DIR = PROCESSED_DIR / "severity"
-REPORT_DIR = PROJECT_ROOT / "reports"
+REPORT_DIR = PROJECT_ROOT / "docs" / "reports" / "severity_comparison"
 REPORT_DIR.mkdir(parents=True, exist_ok=True)
 
 CURRENT_RANDOM_STATES = (0, 10, 20, 42, 100)

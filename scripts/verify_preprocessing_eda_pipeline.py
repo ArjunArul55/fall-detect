@@ -28,7 +28,7 @@ from src.data.sisfall_preprocessing import (
 )
 
 
-DATASET_ROOT = ROOT / "SisFall_dataset"
+DATASET_ROOT = ROOT / "data" / "raw" / "SisFall_dataset"
 PROCESSED_DIR = ROOT / "data" / "processed"
 VERIFY_DIR = PROCESSED_DIR / "verification"
 PLOTS_DIR = VERIFY_DIR / "plots"

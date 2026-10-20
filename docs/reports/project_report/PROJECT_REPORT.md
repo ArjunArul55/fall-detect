@@ -1,6 +1,6 @@
 # Fall Detection System — End-to-End Project Report
 
-Generated: 2026-09-15 09:50 UTC
+Generated: 2026-10-15 16:44 UTC
 Canonical severity run: `k2_20260914T055946Z`
 Severity artifacts: `data/processed/severity/runs/k2_20260914T055946Z`
 Severity evaluation: `results/cnn_lstm_baseline/severity_eval/k2_20260914T055946Z`

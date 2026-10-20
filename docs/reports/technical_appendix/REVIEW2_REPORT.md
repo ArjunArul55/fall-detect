@@ -2,6 +2,8 @@
 
 Scope: raw dataset through binary fall/not-fall classification (CNN baseline and CNN-LSTM). Severity clustering (K=2) is included per explicit confirmation for this review; the severity-aware CNN-LSTM model itself (a distinct future milestone) is out of scope. Every number and plot below traces to a real, current artifact file cited immediately beneath it.
 
+> Locked reporting policy: canonical severity is K=2 (Mild/Severe/Uncertain (-1)); Moderate/K=3 is archived exploration only. The headline comparison uses threshold 0.25, selected on validation by maximum F2 and fixed for test. Threshold 0.20 is a FiLM sensitivity row only; 0.50 is reference only.
+
 ## 1. Dataset
 
 SisFall contains 38 subjects (23 young adults `SA01`-`SA23`, 15 elderly `SE01`-`SE15`), each performing 19 ADL activity types (`D01`-`D19`) and 15 fall types (`F01`-`F15`) across multiple trials. Each raw recording file has 9 comma-separated integer sensor values per line (`acc1_x/y/z`, `gyro_x/y/z`, `acc2_x/y/z`), terminated by a semicolon, sampled at 200 Hz.
@@ -218,7 +220,7 @@ Adds an `LSTM(64, return_sequences=True, unroll=True)` layer after the same Conv
 
 *Source: `results/cnn_lstm_baseline/cnn_lstm_best.keras (loaded via src/keras_model_loading.py)`*
 
-**Table 7.2 — CNN-LSTM test metrics at threshold 0.50 and 0.25** (verbatim from the current canonical run_metadata.json, training commit `6e8b4a96`).
+**Table 7.2 — CNN-LSTM test metrics at the 0.25 headline threshold and the 0.50 reference threshold** (verbatim from the current canonical run_metadata.json, training commit `6e8b4a96`).
 
 |   threshold |   precision |   recall |     f1 | confusion_matrix_TN_FP_FN_TP   |
 |------------:|------------:|---------:|-------:|:-------------------------------|
@@ -258,7 +260,7 @@ Adds an `LSTM(64, return_sequences=True, unroll=True)` layer after the same Conv
 
 ## 8. Summary
 
-**Table 8.1 — Final comparison: CNN baseline vs CNN-LSTM at threshold 0.50**.
+**Table 8.1 — Reference comparison: CNN baseline vs CNN-LSTM at threshold 0.50 (not the headline comparison)**.
 
 | model            |   threshold |   precision |   recall |     f1 |   recording_level_recall |
 |:-----------------|------------:|------------:|---------:|-------:|-------------------------:|
@@ -266,6 +268,8 @@ Adds an `LSTM(64, return_sequences=True, unroll=True)` layer after the same Conv
 | CNN-LSTM (final) |         0.5 |      0.977  |   0.9925 | 0.9847 |                   1      |
 
 *Source: `results/cnn_baseline/run_metadata.json, results/cnn_lstm_baseline/run_metadata.json, results/cnn_lstm_baseline/recording_level_eval/evaluation_summary.json`*
+
+The headline comparison threshold is 0.25 for all models. A CNN test evaluation at 0.25 is not present in the cited artifacts and remains to be produced; the table above is retained only as the 0.50 reference comparison.
 
 ## Not Available
 

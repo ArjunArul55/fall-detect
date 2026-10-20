@@ -1,0 +1,11 @@
+{
+  "explorer.excludeGitIgnore": true,
+  "files.exclude": {
+    "**/.git": true,
+    "**/.venv": true,
+    "**/__pycache__": true,
+    "**/.pytest_cache": true,
+    "data/raw/SisFall_dataset": true,
+    "data/processed/deprecated_severity": true
+  }
+}

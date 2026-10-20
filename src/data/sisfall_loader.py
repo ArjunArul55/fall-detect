@@ -21,9 +21,8 @@ class ActivityRecord:
 def _resolve_dataset_root(dataset_root: str | Path | None = None) -> Path:
     """Return the SisFall dataset root path.
 
-    The loader first checks the provided path. If none is given, it looks for a
-    folder named ``SisFall_dataset`` in the project root or in the current
-    workspace.
+    The loader first checks the provided path. If none is given, it looks in
+    the canonical ``data/raw/SisFall_dataset`` location before legacy locations.
     """
 
     if dataset_root is not None:
@@ -35,9 +34,9 @@ def _resolve_dataset_root(dataset_root: str | Path | None = None) -> Path:
     project_root = Path(__file__).resolve().parents[2]
     workspace_root = project_root.parent
     candidates = [
+        project_root / "data" / "raw" / "SisFall_dataset",
         workspace_root / "SisFall_dataset",
         project_root / "SisFall_dataset",
-        project_root / "data" / "raw" / "SisFall_dataset",
         workspace_root / "fall detection project" / "SisFall_dataset",
     ]
 
