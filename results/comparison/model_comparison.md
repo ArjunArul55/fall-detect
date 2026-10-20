@@ -17,7 +17,7 @@ This report consolidates the test-set performance across models developed in the
 | **FiLM (k=1, exploratory)** | 0.60 (mean user) | 0.9932 | 0.9720 | 0.9554 | 0.9738 | 0.9840 | 16.64 | 0.9998 | 0.9985 | 46,817 (+128) | N/A | Mean across 3 seeds (`results/film_personalization/full_run_v1`) |
 | **FiLM (k=30, exploratory)** | 0.75 (mean user) | 0.9943 | 0.9693 | 0.9692 | 0.9787 | 0.9880 | 14.03 | 0.9998 | 0.9986 | 46,817 (+128) | N/A | Mean across 3 seeds (`results/film_personalization/full_run_v1`) |
 
-> **Footnote**: Evaluated on 6 held-out test subjects (4 young adults with falls: SA02, SA09, SA14, SE11; 2 elderly subjects with ADL-only: SA03, SE14). Fall-sensitive metrics ($F_1$, $F_2$, Recall) are computed strictly across fall-containing subjects. With $n=4$ fall subjects, statistical significance cannot be claimed.
+> **Footnote**: Evaluated on 6 held-out test subjects (4 young adults with falls: SA02, SA03, SA09, SA14; 2 elderly subjects with ADL-only: SE11, SE14). Fall-sensitive metrics ($F_1$, $F_2$, Recall) are computed strictly across fall-containing subjects. With $n=4$ fall subjects, statistical significance cannot be claimed.
 
 ---
 

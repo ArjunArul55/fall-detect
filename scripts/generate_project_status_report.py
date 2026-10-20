@@ -128,25 +128,47 @@ def model_inventory() -> pd.DataFrame:
 def split_statistics() -> pd.DataFrame:
     rows: list[dict[str, Any]] = []
     processed = ROOT / "data" / "processed"
+    csv_path = processed / "severity" / "runs" / "k2_20260914T055946Z" / "reports" / "post_isolation_forest_all_windows.csv"
+    meta_df = pd.read_csv(csv_path) if csv_path.exists() else None
+
     for split in ["train", "val", "test"]:
-        windows = np.load(processed / f"{split}.npy")
-        labels = np.load(processed / f"{split}_labels.npy")
-        subjects = np.load(processed / f"{split}_subject_ids.npy", allow_pickle=True)
-        recordings = np.load(processed / f"{split}_recording_ids.npy", allow_pickle=True)
-        rows.append(
-            {
-                "split": split,
-                "windows": len(windows),
-                "shape": str(windows.shape),
-                "subjects": len(np.unique(subjects)),
-                "recordings": len(np.unique(recordings)),
-                "ADL/background": int((labels == 0).sum()),
-                "fall": int((labels == 1).sum()),
-                "fall_%": float((labels == 1).mean() * 100),
-                "NaN": int(np.isnan(windows).sum()),
-                "Inf": int(np.isinf(windows).sum()),
-            }
-        )
+        npy_path = processed / f"{split}.npy"
+        if npy_path.exists():
+            windows = np.load(npy_path)
+            labels = np.load(processed / f"{split}_labels.npy")
+            subjects = np.load(processed / f"{split}_subject_ids.npy", allow_pickle=True)
+            recordings = np.load(processed / f"{split}_recording_ids.npy", allow_pickle=True)
+            rows.append(
+                {
+                    "split": split,
+                    "windows": len(windows),
+                    "shape": str(windows.shape),
+                    "subjects": len(np.unique(subjects)),
+                    "recordings": len(np.unique(recordings)),
+                    "ADL/background": int((labels == 0).sum()),
+                    "fall": int((labels == 1).sum()),
+                    "fall_%": float((labels == 1).mean() * 100),
+                    "NaN": int(np.isnan(windows).sum()),
+                    "Inf": int(np.isinf(windows).sum()),
+                }
+            )
+        elif meta_df is not None:
+            sub = meta_df[meta_df["split"] == split]
+            labels = sub["class_label"].to_numpy()
+            rows.append(
+                {
+                    "split": split,
+                    "windows": len(sub),
+                    "shape": f"({len(sub)}, 64, 6) [metadata]",
+                    "subjects": int(sub["subject_id"].nunique()),
+                    "recordings": int(sub["recording_id"].nunique()),
+                    "ADL/background": int((labels == 0).sum()),
+                    "fall": int((labels == 1).sum()),
+                    "fall_%": float((labels == 1).mean() * 100),
+                    "NaN": "UNVERIFIED (.npy missing)",
+                    "Inf": "UNVERIFIED (.npy missing)",
+                }
+            )
     return pd.DataFrame(rows)
 
 
