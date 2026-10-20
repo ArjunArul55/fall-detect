@@ -1,0 +1,6 @@
+model,val_selected_threshold,accuracy,precision,recall,f1,f2,fa_per_hour,auroc,auprc,parameters,severity_macro_f1,status
+CNN (binary),0.20,0.9965,0.9683,0.9925,0.9802,0.9876,14.12,UNVERIFIED,UNVERIFIED,33729,N/A,reproduced from results/cnn_baseline/run_metadata.json
+CNN-LSTM (binary),0.25,0.9960,0.9606,0.9950,0.9775,0.9879,17.74,0.9998,0.9987,46817,N/A,reproduced from results/cnn_lstm_baseline/run_metadata.json
+CNN-LSTM + severity head,0.25,UNVERIFIED,UNVERIFIED,UNVERIFIED,UNVERIFIED,UNVERIFIED,UNVERIFIED,UNVERIFIED,UNVERIFIED,46883,UNVERIFIED,architecture/tests/pipeline implemented; training UNVERIFIED pending data/processed/*.npy tensors
+FiLM (k=1, exploratory),0.60,0.9932,0.9720,0.9554,0.9738,0.9840,16.64,0.9998,0.9985,"46817 (+128 affine)",N/A,reproduced from results/film_personalization/full_run_v1/analysis/test_metric_summary.csv
+FiLM (k=30, exploratory),0.75,0.9943,0.9693,0.9692,0.9787,0.9880,14.03,0.9998,0.9986,"46817 (+128 affine)",N/A,reproduced from results/film_personalization/full_run_v1/analysis/test_metric_summary.csv

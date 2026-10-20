@@ -1,4 +1,7 @@
-severity_label,severity,subjects,mean_subject_recall,min_subject_recall,impact_verified_subjects
--1,Uncertain (-1),4,0.9166666666666666,0.6666666666666666,4
-0,Mild,4,0.9858616639538325,0.96875,4
-1,Severe,4,0.9971590909090909,0.9886363636363636,4
+threshold_role,threshold,severity_label,severity,subjects,mean_subject_recall,min_subject_recall,impact_verified_subjects
+validation_selected,0.25,-1,Uncertain (-1),4,0.9166666666666666,0.6666666666666666,4
+validation_selected,0.25,0,Mild,4,0.9895833333333334,0.9583333333333334,4
+validation_selected,0.25,1,Severe,4,0.9987562189054726,0.9950248756218906,4
+reference_0.50,0.5,-1,Uncertain (-1),4,0.9166666666666666,0.6666666666666666,4
+reference_0.50,0.5,0,Mild,4,0.984375,0.9375,4
+reference_0.50,0.5,1,Severe,4,0.9975124378109452,0.9900497512437811,4
