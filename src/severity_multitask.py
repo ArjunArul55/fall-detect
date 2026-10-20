@@ -2,6 +2,9 @@
 
 from __future__ import annotations
 
+from pathlib import Path
+from typing import Any
+
 import numpy as np
 
 
@@ -113,3 +116,93 @@ def count_uncertain_fall_rows(binary_labels: np.ndarray, severity_labels: np.nda
     if not np.isin(binary, [0, 1]).all() or not np.isin(severity, [-1, 0, 1]).all():
         raise ValueError("Unexpected binary or severity labels.")
     return int(np.count_nonzero((binary == 1) & (severity == -1)))
+
+
+def build_multitask_cnn_lstm(
+    tf: Any,
+    input_shape: tuple[int, int] = (64, 6),
+    unroll: bool = True,
+    baseline_weights_path: str | Path | None = None,
+) -> Any:
+    """Build multi-task CNN-LSTM with binary sigmoid head and 2-class severity head."""
+
+    layers = tf.keras.layers
+    inputs = layers.Input(shape=input_shape, name="imu_input")
+    x = layers.Conv1D(32, 5, padding="same", name="conv1d")(inputs)
+    x = layers.BatchNormalization(name="batch_normalization")(x)
+    x = layers.ReLU(name="re_lu")(x)
+    x = layers.MaxPooling1D(2, name="max_pooling1d")(x)
+    x = layers.Conv1D(64, 5, padding="same", name="conv1d_1")(x)
+    x = layers.BatchNormalization(name="batch_normalization_1")(x)
+    x = layers.ReLU(name="re_lu_1")(x)
+    x = layers.MaxPooling1D(2, name="max_pooling1d_1")(x)
+    x = layers.LSTM(64, return_sequences=True, unroll=unroll, name="lstm")(x)
+    x = layers.GlobalAveragePooling1D(name="global_average_pooling1d")(x)
+    shared_features = layers.Dense(32, activation="relu", name="dense")(x)
+
+    # Binary head: exactly matching cnn_lstm_baseline
+    dropout = layers.Dropout(0.3, name="dropout")(shared_features)
+    binary_output = layers.Dense(1, activation="sigmoid", name="dense_1")(dropout)
+
+    # Severity head: 2-class logits & softmax Mild/Severe from shared pre-head features
+    severity_logits = layers.Dense(2, activation=None, name="severity_logits")(shared_features)
+    severity_output = layers.Softmax(name="severity_output")(severity_logits)
+
+    model = tf.keras.Model(
+        inputs=inputs,
+        outputs={
+            "binary_output": binary_output,
+            "severity_logits": severity_logits,
+            "severity_output": severity_output,
+        },
+        name="cnn_lstm_severity_multitask",
+    )
+
+    if baseline_weights_path is not None:
+        init_multitask_from_baseline(tf, model, Path(baseline_weights_path))
+
+    return model
+
+
+def init_multitask_from_baseline(tf: Any, multitask_model: Any, baseline_path: Path) -> None:
+    """Initialize trunk and binary head weights from cnn_lstm_baseline."""
+
+    from scripts.train_cnn_lstm_baseline import build_model as build_baseline_fn
+    from src.keras_model_loading import load_keras_model
+
+    baseline = load_keras_model(tf, baseline_path, build_baseline_fn)
+    target_layers = {layer.name: layer for layer in multitask_model.layers}
+    for layer in baseline.layers:
+        if layer.name in target_layers and layer.weights:
+            target_layers[layer.name].set_weights(layer.get_weights())
+
+
+def compute_multitask_loss(
+    y_true_binary: Any,
+    y_true_severity: Any,
+    binary_prob: Any,
+    severity_logits: Any,
+    binary_class_weights: dict[int, float],
+    severity_class_weights_arr: Any,
+    lambda_weight: float = 0.3,
+) -> tuple[Any, Any, Any]:
+    """Compute combined weighted BCE + lambda * severity_loss."""
+
+    import tensorflow as tf
+
+    b_true = tf.cast(tf.reshape(y_true_binary, [-1]), tf.float32)
+    b_prob = tf.clip_by_value(tf.reshape(binary_prob, [-1]), 1e-7, 1.0 - 1e-7)
+    bce = -(b_true * tf.math.log(b_prob) + (1.0 - b_true) * tf.math.log(1.0 - b_prob))
+    sw = tf.where(b_true > 0.5, float(binary_class_weights[1]), float(binary_class_weights[0]))
+    binary_loss = tf.math.divide_no_nan(tf.reduce_sum(bce * sw), tf.reduce_sum(sw))
+
+    sev_mask = tf.logical_and(b_true > 0.5, tf.cast(y_true_severity, tf.int32) >= 0)
+    sev_loss = severity_loss(
+        y_sev=y_true_severity,
+        logits=severity_logits,
+        mask=sev_mask,
+        class_weights=severity_class_weights_arr,
+    )
+    total_loss = binary_loss + tf.cast(lambda_weight, binary_loss.dtype) * sev_loss
+    return total_loss, binary_loss, sev_loss
+
