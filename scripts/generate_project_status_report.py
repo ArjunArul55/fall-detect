@@ -2,6 +2,9 @@ from __future__ import annotations
 
 import json
 import pickle
+import re
+import subprocess
+import sys
 from datetime import date
 from pathlib import Path
 from typing import Any
@@ -11,7 +14,7 @@ import pandas as pd
 
 
 ROOT = Path(__file__).resolve().parents[1]
-REPORT_PATH = ROOT / "PROJECT_STATUS_REPORT.md"
+REPORT_PATH = ROOT / "docs" / "reports" / "PROJECT_STATUS_REPORT.md"
 
 
 def fmt(value: Any) -> str:
@@ -135,11 +138,54 @@ def split_statistics() -> pd.DataFrame:
     return pd.DataFrame(rows)
 
 
+def pytest_verification_summary() -> str:
+    result = subprocess.run(
+        [sys.executable, "-m", "pytest", "-q"],
+        cwd=ROOT,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    output = "\n".join(part for part in (result.stdout, result.stderr) if part)
+    summary_lines = [
+        line.strip()
+        for line in output.splitlines()
+        if re.search(r"\b(?:passed|failed|error|errors|skipped|xfailed|xpassed)\b", line)
+    ]
+    if not summary_lines:
+        raise RuntimeError(
+            "Could not parse the pytest result summary:\n"
+            + output[-4000:]
+        )
+    summary_line = summary_lines[-1]
+    counts: dict[str, int] = {}
+    for count, state in re.findall(
+        r"(\d+)\s+(passed|failed|error|errors|skipped|xfailed|xpassed)",
+        summary_line,
+    ):
+        normalized = "errors" if state in {"error", "errors"} else state
+        counts[normalized] = counts.get(normalized, 0) + int(count)
+    collected = sum(counts.values())
+    if collected == 0:
+        raise RuntimeError(f"Pytest summary contained no test counts: {summary_line}")
+    status = "passed" if result.returncode == 0 else f"failed (exit {result.returncode})"
+    details = ", ".join(
+        f"{counts.get(state, 0)} {state}"
+        for state in ("passed", "failed", "errors", "skipped", "xfailed", "xpassed")
+        if counts.get(state, 0) or state in {"passed", "failed", "errors"}
+    )
+    return (
+        f"pytest run on {date.today().isoformat()}: **{collected} tests** "
+        f"({details}; overall {status})."
+    )
+
+
 def build_report() -> str:
     split_frame = split_statistics()
     totals = split_frame[["windows", "ADL/background", "fall"]].sum(numeric_only=True)
-    severity_dir = ROOT / "data" / "processed" / "severity"
+    severity_dir = ROOT / "data" / "processed" / "severity" / "runs" / "k2_20260914T055946Z"
     feature_names = json.loads((severity_dir / "feature_names.json").read_text(encoding="utf-8"))
+    test_summary = pytest_verification_summary()
     report = [
         "# Fall Detection Project: Complete Status and Data Guide",
         "",
@@ -147,7 +193,7 @@ def build_report() -> str:
         "",
         "## 1. Executive Summary",
         "",
-        "This project has completed raw SisFall ingestion, signal preprocessing, subject-wise splitting, normalized sliding-window generation, exploratory data analysis, impact-centered binary labeling, and unsupervised fall-severity/anomaly analysis. The processed data is ready for supervised model training, but no supervised fall detector has been trained or evaluated yet.",
+        "This project includes raw SisFall ingestion, signal preprocessing, subject-wise splitting, normalized sliding-window generation, exploratory data analysis, impact-centered binary labeling, unsupervised fall-severity/anomaly analysis, and supervised CNN/CNN-LSTM fall-detection baselines.",
         "",
         "The current canonical binary dataset contains **84,123 windows** with shape `(64, 6)`: **76,939 ADL/background** windows and **7,184 impact-centered fall** windows. The six channels are normalized accelerometer and gyroscope channels. Severity labels are derived only for the 7,184 fall windows.",
         "",
@@ -164,9 +210,9 @@ def build_report() -> str:
         "9. **Windowing:** Windows contain 64 samples with stride 16. At 20 Hz, each window is 3.2 seconds and each stride is 0.8 seconds, producing 75% overlap.",
         "10. **Impact-centered labels:** For fall recordings, the raw acceleration-magnitude peak identifies the impact. Only windows containing that impact receive label 1; other windows from the same recording remain background label 0.",
         "11. **EDA and quality checks:** Class balance, signal distributions, autocorrelation, outliers, acceleration peaks, channel health, and integrity checks were exported to CSV and plots.",
-        "12. **Unsupervised severity labeling:** Fall windows were transformed into 58 statistical features, scaled using train fall windows, clustered with KMeans, and ordered by acceleration/gyroscope intensity into Mild, Moderate, and Severe.",
+        "12. **Unsupervised severity labeling:** Fall windows were transformed into 58 statistical features, scaled using train fall windows, clustered with KMeans, and ordered by acceleration/gyroscope intensity into Mild and Severe (K=2, canonical run `k2_20260914T055946Z`). The earlier K=3 run is archived for reference.",
         "13. **Anomaly refinement:** A train-only Isolation Forest flags unusual fall windows. Anomalous fall severity is changed to `-1` in refined labels, while the original cluster labels remain available.",
-        "14. **Automated testing:** The repository includes preprocessing, pipeline, severity, and anomaly tests. The last recorded verification was 15 passing tests with one expected synthetic-clustering convergence warning.",
+        f"14. **Automated testing:** {test_summary}",
         "",
         "## 3. Current Dataset Statistics",
         "",
@@ -186,19 +232,19 @@ def build_report() -> str:
         "",
         "The final tensor is `(number_of_windows, 64, 6)`. Each timestep has `acc1_x`, `acc1_y`, `acc1_z`, `gyro_x`, `gyro_y`, and `gyro_z`. Values are **standardized z-scores**, calculated as `(value - training_mean) / training_std`; therefore they are dimensionless. Do not interpret normalized values directly as g or angular velocity without applying the saved scaler in reverse.",
         "",
-        f"Each fall window becomes **{len(feature_names)} features**: 42 per-channel values (six channels times mean, standard deviation, minimum, maximum, range, RMS, and absolute peak) plus 16 magnitude values (accelerometer and gyroscope magnitude times mean, standard deviation, minimum, maximum, range, RMS, peak, and mean-square energy). Feature names are stored in `data/processed/severity/feature_names.json`.",
+        f"Each fall window becomes **{len(feature_names)} features**: 42 per-channel values (six channels times mean, standard deviation, minimum, maximum, range, RMS, and absolute peak) plus 16 magnitude values (accelerometer and gyroscope magnitude times mean, standard deviation, minimum, maximum, range, RMS, peak, and mean-square energy). Feature names are stored in `data/processed/severity/runs/k2_20260914T055946Z/feature_names.json`.",
         "",
         "Magnitude definitions: `acc_mag = sqrt(acc1_x^2 + acc1_y^2 + acc1_z^2)` and `gyro_mag = sqrt(gyro_x^2 + gyro_y^2 + gyro_z^2)`. Since the input is normalized, these magnitudes are normalized-coordinate magnitudes, not physical acceleration or angular-velocity units.",
         "",
         "## 5. Severity and Anomaly Results",
         "",
-        "The intended current three-level result is `0 = Mild`, `1 = Moderate`, `2 = Severe`, and `-1 = non-applicable or uncertain`. ADL/background windows are always `-1` for severity. KMeans is fitted only on train fall windows with `k=3`, `random_state=42`, and `n_init=20`. The Isolation Forest uses contamination 0.02, 256 estimators, and random state 42.",
+        "The canonical current result is `0 = Mild`, `1 = Severe`, and `-1 = non-applicable or uncertain`. ADL/background windows are always `-1` for severity. KMeans is fitted only on train fall windows with `k=2`, `random_state=42`, and `n_init=20`. The Isolation Forest uses contamination 0.02, 256 estimators, and random state 42.",
         "",
         "The canonical post-Isolation Forest fall export contains 7,184 rows: train 4,484, validation 1,500, and test 1,200. Anomaly counts are train 90 (2.01%), validation 23 (1.53%), and test 24 (2.00%). Anomalous fall windows are uncertain, not automatically bad data; review or exclude them deliberately during modeling.",
         "",
         "### Important artifact consistency note",
         "",
-        "The repository contains outputs from more than one severity-analysis run. `data/processed/severity/reports/post_isolation_forest_fall_windows.csv`, `cluster_feature_report.csv`, and the recorded project summary contain the later three-level Mild/Moderate/Severe result. Some files directly under `data/processed/severity/` such as `severity_cluster_sizes.csv`, `severity_cluster_profiles.csv`, and `anomaly_by_severity.csv` contain an older two-cluster or Low/Medium result. The historical K2/K3 diagnostics explain that K=2 had better separation scores, while K=3 was selected for the desired three-level interpretation. Do not mix these older two-cluster files with the current three-level labels; regenerate them together before using them for analysis.",
+        "The repository contains artifacts from multiple severity-analysis runs. The canonical result is the versioned K=2 run under `data/processed/severity/runs/k2_20260914T055946Z/`; the earlier K=3 run is archived under `data/processed/deprecated_severity/`. Some unversioned files directly under `data/processed/severity/` may belong to older runs. Do not mix them with the canonical K=2 outputs; use one timestamped run directory for analysis.",
         "",
         "## 6. Stored Arrays and Models",
         "",
@@ -223,9 +269,9 @@ def build_report() -> str:
         "## 8. How to Continue",
         "",
         "1. Treat `train.npy`, `val.npy`, and `test.npy` plus their aligned metadata arrays as the current binary modeling dataset.",
-        "2. Resolve the severity artifact mismatch by rerunning the chosen K=3 pipeline and downstream report export as one versioned run.",
-        "3. Train a baseline binary classifier and report window-, recording-, and subject-level metrics.",
-        "4. Evaluate performance separately for Mild, Moderate, Severe, and uncertain (`-1`) fall windows.",
+        "2. Build a severity-aware CNN-LSTM with a dedicated severity-prediction head; the current detector predicts only binary fall/background.",
+        "3. Validate the CNN-LSTM and FiLM prototype on additional real-world subjects and sensor placements.",
+        "4. Continue reporting window-, recording-, subject-level, and impact-verified performance separately.",
         "5. Keep all transformations train-only: preprocessing scaler, severity feature scaler, KMeans, and Isolation Forest.",
         "6. Record the exact artifact generation command and timestamp whenever the processed arrays or severity outputs are regenerated.",
         "",
@@ -233,7 +279,7 @@ def build_report() -> str:
         "",
         "| Purpose | File |",
         "| --- | --- |",
-        "| Consolidated guide | `PROJECT_STATUS_REPORT.md` |",
+        "| Consolidated guide | `docs/reports/PROJECT_STATUS_REPORT.md` |",
         "| Rebuild this guide | `scripts/generate_project_status_report.py` |",
         "| Raw loader | `src/data/sisfall_loader.py` |",
         "| Preprocessing/windowing | `src/data/sisfall_preprocessing.py` |",
@@ -246,5 +292,6 @@ def build_report() -> str:
 
 
 if __name__ == "__main__":
+    REPORT_PATH.parent.mkdir(parents=True, exist_ok=True)
     REPORT_PATH.write_text(build_report(), encoding="utf-8")
     print(f"Wrote {REPORT_PATH}")

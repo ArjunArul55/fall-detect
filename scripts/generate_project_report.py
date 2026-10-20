@@ -25,7 +25,7 @@ if str(ROOT) not in sys.path:
 
 from src.data.severity_naming import load_severity_names  # noqa: E402
 
-REPORT_DIR = ROOT / "report"
+REPORT_DIR = ROOT / "docs" / "reports" / "project_report"
 ASSETS_DIR = REPORT_DIR / "report_assets"
 PROCESSED_DIR = ROOT / "data" / "processed"
 CANONICAL_SEVERITY_RUN = "k2_20260914T055946Z"
@@ -707,6 +707,7 @@ def main() -> None:
     )
 
     report_md = build_report(ctx, plot_paths)
+    REPORT_DIR.mkdir(parents=True, exist_ok=True)
     report_path = REPORT_DIR / "PROJECT_REPORT.md"
     report_path.write_text(report_md, encoding="utf-8")
 

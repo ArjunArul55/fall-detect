@@ -16,7 +16,7 @@ SisFall contains 38 subjects (23 young adults `SA01`-`SA23`, 15 elderly `SE01`-`
 
 *Source: `data/processed/{split}_subject_ids.npy, {split}_recording_ids.npy, {split}_labels.npy`*
 
-**Table 1.2 — Sample structure of one raw recording** (`SisFall_dataset/SA01/D01_SA01_R01.txt`, first 10 rows, 6 retained channels). The raw file has 9 comma-separated columns per row (acc1 xyz, gyro xyz, acc2 xyz), terminated by a semicolon; the 3 acc2 columns are dropped during preprocessing (see Section 2).
+**Table 1.2 — Sample structure of one raw recording** (`data/raw/SisFall_dataset/SA01/D01_SA01_R01.txt`, first 10 rows, 6 retained channels). The raw file has 9 comma-separated columns per row (acc1 xyz, gyro xyz, acc2 xyz), terminated by a semicolon; the 3 acc2 columns are dropped during preprocessing (see Section 2).
 
 |   row_index |   acc1_x |   acc1_y |   acc1_z |   gyro_x |   gyro_y |   gyro_z |
 |------------:|---------:|---------:|---------:|---------:|---------:|---------:|
@@ -31,7 +31,7 @@ SisFall contains 38 subjects (23 young adults `SA01`-`SA23`, 15 elderly `SE01`-`
 |           8 |      -51 |     -312 |      -33 |     -210 |     -752 |      -90 |
 |           9 |      -55 |     -339 |      -19 |     -214 |     -764 |      -72 |
 
-*Source: `SisFall_dataset/SA01/D01_SA01_R01.txt`*
+*Source: `data/raw/SisFall_dataset/SA01/D01_SA01_R01.txt`*
 
 **Figure 1.1 — Class balance (ADL vs Fall) and per-split window counts**
 

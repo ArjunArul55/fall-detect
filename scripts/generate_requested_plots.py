@@ -23,7 +23,7 @@ from src.data.severity_naming import load_severity_names  # noqa: E402
 
 DEFAULT_SEVERITY_DIR = ROOT / "data" / "processed" / "severity" / "runs" / "k2_20260914T055946Z"
 DEFAULT_EVAL_DIR = ROOT / "results" / "cnn_lstm_baseline" / "severity_eval" / "k2_20260914T055946Z"
-DEFAULT_OUTPUT_DIR = ROOT / "reports" / "requested_plots"
+DEFAULT_OUTPUT_DIR = ROOT / "docs" / "presentation" / "figures" / "severity"
 SEVERITY_COLORS = {-1: "#7A7A7A", 0: "#4C78A8", 1: "#59A14F", 2: "#E15759"}
 
 

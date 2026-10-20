@@ -62,7 +62,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--output-dir",
         type=Path,
-        default=Path("figures"),
+        default=Path("docs/presentation/figures/personalization"),
         help="Directory in which the 300-dpi PNG figures will be saved.",
     )
     return parser.parse_args()
