@@ -184,20 +184,50 @@ threshold sweep. A FiLM validation-retuned threshold is sensitivity analysis onl
 reported as selected for its run; the project's `0.50` results are reference columns,
 not the headline comparison.
 
+## Interactive Streaming Demo (Task P6)
+
+A real-time edge streaming simulator and interactive dashboard running on the deployed quantized model (`results/quantization/run_v1/deployed_model.tflite`):
+
+### 1. Web Dashboard (Streamlit)
+```powershell
+streamlit run app/demo.py
+```
+- **Features**: Real-time sliding ring buffer (64 samples @ 20 Hz, stride 16), rolling 6-channel IMU charts, probability timeline vs. validation-selected threshold ($\tau = 0.10$), visual status badge (`MONITORING` / `FALL DETECTED`), configurable $N$-consecutive positives (1–3), cooldown refractory period (10 s), caregiver notification dispatch log, and custom 6-channel CSV upload.
+- **Walkthrough Guide**: See [docs/DEMO_SCRIPT.md](docs/DEMO_SCRIPT.md) for a 5-minute presentation script covering 6 test recordings (walking, sitting, stumble, jump, mild fall, severe fall).
+
+### 2. Command-Line Replay
+```powershell
+python scripts/run_demo_cli.py --csv-path data/demo_recordings/SA02_F01_MildFall.csv --speed 5.0
+```
+Flags:
+- `--recording-id`: Replay trial from test set (e.g. `SA02:F01_SA02_R02.txt`).
+- `--csv-path`: Replay custom 6-channel IMU CSV file.
+- `--speed`: Replay speed multiplier (e.g. `1.0` real-time, `5.0` 5x speed, `0` instantaneous).
+- `--n-consecutive`: Required consecutive positive windows before alerting (`1`, `2`, or `3`).
+- `--cooldown`: Alert suppression window in seconds (default `10.0s`).
+
+## Limitations
+
+1. **Laboratory Simulated Falls (SisFall)**: Falls were performed by young adult participants landing on safety mattresses under controlled laboratory conditions. Real-world geriatric falls typically feature distinct pre-fall gait instability, different impact dynamics, and post-fall immobility/long-lie periods that are not fully represented in lab data.
+2. **Small Test Cohort ($n=6$)**: The subject-wise test split comprises 6 subjects, of whom only 4 performed falls and 2 performed ADL-only activities. Fall-sensitive metrics are unavailable for ADL-only subjects, and sample size is insufficient for formal statistical significance testing.
+3. **Clustering-Derived Severity Ground Truth**: Severity categories (Mild vs. Severe) were derived via unsupervised $K=2$ clustering and Isolation Forest anomaly filtering on peak acceleration and angular velocity, rather than verified clinical injury outcomes.
+4. **Extreme-Gyro Outliers**: Windows flagged as $-1$ by the Isolation Forest are extreme-gyro outliers and are masked from severity loss/metrics; they remain in the binary fall-detection evaluation.
+
 ## Tests
 
 ```bash
 pytest
 ```
 
-Run `pytest` to verify the current test suite. The generated project status report runs pytest and records its current pass/fail counts.
+Run `pytest` to verify the test suite.
 
 ## Notes
 
 - Large generated binary artifacts such as `*.npy`, `*.pkl`, and trained model checkpoints may be excluded from git depending on local ignore rules.
-- Do not mix severity artifacts from different runs without regenerating them together; the status report notes that some stored severity files may reflect older K2/K3 comparison runs.
+- Do not mix severity artifacts from different runs without regenerating them together.
 - SisFall dataset usage is subject to the original dataset terms.
 
 ## License
 
 Research and educational use.
+
