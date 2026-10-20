@@ -1,0 +1,9 @@
+evaluation,method,label_group,windows,signed_mean_probability_shift,absolute_mean_probability_shift,threshold_crossings_vs_global,subject_seed_rows
+real_heldout,full_model,ADL,61235,-3.2719335987015556e-05,5.488455190061359e-05,5,30
+real_heldout,full_model,Fall,6000,-0.00013416821602731943,0.0004339509323472157,0,20
+real_heldout,last_layer,ADL,61235,-5.987130613599826e-05,5.987130613599826e-05,5,30
+real_heldout,last_layer,Fall,6000,-0.00020805248650503926,0.00020805248650503926,0,20
+simulated_users,full_model,ADL,72690,-8.693234450258084e-05,0.00011575922744668787,21,30
+simulated_users,full_model,Fall,9000,0.00022735160164302214,0.0015512570453817412,12,30
+simulated_users,last_layer,ADL,72690,-8.788647567901838e-05,8.788647567901838e-05,10,30
+simulated_users,last_layer,Fall,9000,-0.0008246196571538651,0.0008246196571538651,17,30

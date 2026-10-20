@@ -1,0 +1,25 @@
+{
+  "selected_k": 3,
+  "selection_rule": "Selected the simplest K within a near-tie of the best silhouette, while also keeping Davies-Bouldin and Calinski-Harabasz close to their best values and requiring each cluster to remain above a minimum cluster share threshold.",
+  "best_silhouette": 0.17738245927856272,
+  "best_davies_bouldin": 1.8706816951172307,
+  "best_calinski_harabasz": 999.813841705109,
+  "k3_statement": "k=3 is supported. The selected k=3 produced a meaningful low \u2192 medium \u2192 high intensity progression based on peak acceleration, RMS, gyroscope peak, and energy, with no cluster below the minimum cluster share threshold.",
+  "tested_k_values": [
+    2,
+    3,
+    4,
+    5
+  ],
+  "selected_cluster_sizes": [
+    1659,
+    1558,
+    1267
+  ],
+  "selected_cluster_percentages": [
+    0.3699821587867975,
+    0.3474576271186441,
+    0.28256021409455845
+  ],
+  "recommendation": "k=3 remains compatible with the current three-class severity head."
+}

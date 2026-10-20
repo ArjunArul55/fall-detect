@@ -1,0 +1,4 @@
+meta_seed,epochs_run,configured_epochs,best_epoch,best_validation_loss,last_validation_loss,early_stopped,validation_loss_after_best
+42,9,30,4,0.0114084028464276,0.0385471545741893,True,True
+43,13,30,8,0.0212544245684208,0.1161735526014429,True,True
+44,20,30,15,0.0193105393724787,0.0947908266189188,True,True

@@ -1,0 +1,2 @@
+base_tflite_bytes,film_tflite_bytes,tflite_overhead_bytes,user_affine_bytes,channels,base_tflite_max_abs_error,film_tflite_max_abs_error
+194896,197940,3044,512,64,5.960464477539063e-08,0.0

@@ -1,0 +1,328 @@
+{
+  "calibration_seeds": [
+    17,
+    31,
+    47,
+    71,
+    101
+  ],
+  "calibration_sizes": [
+    0,
+    1,
+    5,
+    10,
+    30
+  ],
+  "canonical_threshold": 0.25,
+  "class_weights": {
+    "0": 0.5440134278254383,
+    "1": 6.180084745762712
+  },
+  "command": "\"C:\\Users\\drums\\Desktop\\fall detection project\\.venv\\Scripts\\python.exe\" scripts\\run_film_personalization.py --output-dir \"C:\\Users\\drums\\Desktop\\fall detection project\\results\\film_personalization\\full_run_v1\\seed42\" --seed 42 --epochs 30 --episodes-per-epoch 30 --validation-episodes 12 --patience 5 --finetune-epochs 3 --calibration-seeds 17 31 47 71 101 --timevae-epochs 0",
+  "completed_at_utc": "2026-10-20T05:39:46.347168+00:00",
+  "deployment": {
+    "base_tflite_bytes": 195164,
+    "base_tflite_max_abs_error": 5.960464477539063e-08,
+    "channels": 64,
+    "film_tflite_bytes": 197940,
+    "film_tflite_max_abs_error": 0.0,
+    "tflite_overhead_bytes": 2776,
+    "user_affine_bytes": 512
+  },
+  "early_stopping_patience": 5,
+  "episodes_per_epoch": 30,
+  "film_validation_threshold": 0.8,
+  "fine_tune_epochs": 3,
+  "fine_tune_tuning": {
+    "configurations_per_method": 12,
+    "methods": {
+      "full_model": {
+        "configurations_tried": [
+          {
+            "epochs": 1,
+            "learning_rate": 0.0001,
+            "validation_mean_f2": 0.984644812606137,
+            "validation_mean_false_alarms_per_hour": 22.022838499184342,
+            "validation_subjects_with_falls": 5
+          },
+          {
+            "epochs": 5,
+            "learning_rate": 0.0001,
+            "validation_mean_f2": 0.9845051056462616,
+            "validation_mean_false_alarms_per_hour": 21.10522022838499,
+            "validation_subjects_with_falls": 5
+          },
+          {
+            "epochs": 20,
+            "learning_rate": 0.0001,
+            "validation_mean_f2": 0.9839675638082447,
+            "validation_mean_false_alarms_per_hour": 19.88172920065253,
+            "validation_subjects_with_falls": 5
+          },
+          {
+            "epochs": 1,
+            "learning_rate": 0.001,
+            "validation_mean_f2": 0.9835303182010312,
+            "validation_mean_false_alarms_per_hour": 18.35236541598695,
+            "validation_subjects_with_falls": 5
+          },
+          {
+            "epochs": 5,
+            "learning_rate": 0.001,
+            "validation_mean_f2": 0.9724184578678468,
+            "validation_mean_false_alarms_per_hour": 11.623164763458403,
+            "validation_subjects_with_falls": 5
+          },
+          {
+            "epochs": 20,
+            "learning_rate": 0.001,
+            "validation_mean_f2": 0.9374280600532447,
+            "validation_mean_false_alarms_per_hour": 8.258564437194126,
+            "validation_subjects_with_falls": 5
+          },
+          {
+            "epochs": 1,
+            "learning_rate": 0.01,
+            "validation_mean_f2": 0.8301107802719189,
+            "validation_mean_false_alarms_per_hour": 6.423327895595432,
+            "validation_subjects_with_falls": 5
+          },
+          {
+            "epochs": 5,
+            "learning_rate": 0.01,
+            "validation_mean_f2": 0.11069402736069403,
+            "validation_mean_false_alarms_per_hour": 0.30587275693311583,
+            "validation_subjects_with_falls": 5
+          },
+          {
+            "epochs": 20,
+            "learning_rate": 0.01,
+            "validation_mean_f2": 0.025182778229082048,
+            "validation_mean_false_alarms_per_hour": 0.0,
+            "validation_subjects_with_falls": 5
+          },
+          {
+            "epochs": 1,
+            "learning_rate": 0.1,
+            "validation_mean_f2": 0.19073203492276697,
+            "validation_mean_false_alarms_per_hour": 1.529363784665579,
+            "validation_subjects_with_falls": 5
+          },
+          {
+            "epochs": 5,
+            "learning_rate": 0.1,
+            "validation_mean_f2": 0.0,
+            "validation_mean_false_alarms_per_hour": 0.0,
+            "validation_subjects_with_falls": 5
+          },
+          {
+            "epochs": 20,
+            "learning_rate": 0.1,
+            "validation_mean_f2": 0.0,
+            "validation_mean_false_alarms_per_hour": 0.0,
+            "validation_subjects_with_falls": 5
+          }
+        ],
+        "selected_config": {
+          "epochs": 1,
+          "learning_rate": 0.0001
+        },
+        "selection_metrics": {
+          "validation_mean_f2": 0.984644812606137,
+          "validation_mean_false_alarms_per_hour": 22.022838499184342
+        }
+      },
+      "last_layer": {
+        "configurations_tried": [
+          {
+            "epochs": 1,
+            "learning_rate": 0.0001,
+            "validation_mean_f2": 0.984644812606137,
+            "validation_mean_false_alarms_per_hour": 22.022838499184342,
+            "validation_subjects_with_falls": 5
+          },
+          {
+            "epochs": 5,
+            "learning_rate": 0.0001,
+            "validation_mean_f2": 0.984644812606137,
+            "validation_mean_false_alarms_per_hour": 22.022838499184342,
+            "validation_subjects_with_falls": 5
+          },
+          {
+            "epochs": 20,
+            "learning_rate": 0.0001,
+            "validation_mean_f2": 0.984644812606137,
+            "validation_mean_false_alarms_per_hour": 22.022838499184342,
+            "validation_subjects_with_falls": 5
+          },
+          {
+            "epochs": 1,
+            "learning_rate": 0.001,
+            "validation_mean_f2": 0.984644812606137,
+            "validation_mean_false_alarms_per_hour": 22.022838499184342,
+            "validation_subjects_with_falls": 5
+          },
+          {
+            "epochs": 5,
+            "learning_rate": 0.001,
+            "validation_mean_f2": 0.9847754325282876,
+            "validation_mean_false_alarms_per_hour": 21.716965742251222,
+            "validation_subjects_with_falls": 5
+          },
+          {
+            "epochs": 20,
+            "learning_rate": 0.001,
+            "validation_mean_f2": 0.984243790398388,
+            "validation_mean_false_alarms_per_hour": 21.716965742251222,
+            "validation_subjects_with_falls": 5
+          },
+          {
+            "epochs": 1,
+            "learning_rate": 0.01,
+            "validation_mean_f2": 0.9847754325282876,
+            "validation_mean_false_alarms_per_hour": 21.716965742251222,
+            "validation_subjects_with_falls": 5
+          },
+          {
+            "epochs": 5,
+            "learning_rate": 0.01,
+            "validation_mean_f2": 0.9841006072335541,
+            "validation_mean_false_alarms_per_hour": 20.799347471451878,
+            "validation_subjects_with_falls": 5
+          },
+          {
+            "epochs": 20,
+            "learning_rate": 0.01,
+            "validation_mean_f2": 0.9835332603844064,
+            "validation_mean_false_alarms_per_hour": 18.35236541598695,
+            "validation_subjects_with_falls": 5
+          },
+          {
+            "epochs": 1,
+            "learning_rate": 0.1,
+            "validation_mean_f2": 0.9839535462369682,
+            "validation_mean_false_alarms_per_hour": 19.88172920065253,
+            "validation_subjects_with_falls": 5
+          },
+          {
+            "epochs": 5,
+            "learning_rate": 0.1,
+            "validation_mean_f2": 0.9817591744756253,
+            "validation_mean_false_alarms_per_hour": 13.764274061990212,
+            "validation_subjects_with_falls": 5
+          },
+          {
+            "epochs": 20,
+            "learning_rate": 0.1,
+            "validation_mean_f2": 0.9772855558839574,
+            "validation_mean_false_alarms_per_hour": 9.176182707993474,
+            "validation_subjects_with_falls": 5
+          }
+        ],
+        "selected_config": {
+          "epochs": 1,
+          "learning_rate": 0.01
+        },
+        "selection_metrics": {
+          "validation_mean_f2": 0.9847754325282876,
+          "validation_mean_false_alarms_per_hour": 21.716965742251222
+        }
+      }
+    },
+    "tie_breaking": [
+      "higher validation mean F2",
+      "lower validation mean false alarms per hour",
+      "fewer epochs",
+      "lower learning rate"
+    ],
+    "validation_calibration_policy": "one ADL calibration window per validation subject",
+    "validation_threshold": 0.25
+  },
+  "frozen_backbone_parameters": 46817,
+  "generator_quality": null,
+  "git_commit": "d5d5ad6b984fe3ad0c50da4161a458f0b05d0289",
+  "max_epochs": 30,
+  "meta_learning_rate": 0.001,
+  "parameter_count": 24960,
+  "per_user_affine_bytes": 512,
+  "per_user_affine_floats": 128,
+  "positive_fall_calibration_windows": 2,
+  "query_adl_windows_per_episode": 32,
+  "query_fall_sampling_ratio": 0.08802685565087653,
+  "seed": 42,
+  "simulator_backend": "parametric",
+  "summary_rows": 245,
+  "timevae_epochs": 0,
+  "user_profiles": {
+    "High-amp": {
+      "amplitude_scale": 1.4,
+      "bias_std": 0.0,
+      "name": "High-amp",
+      "noise_std": 0.0,
+      "rotation_degrees": 0.0,
+      "speed_range": [
+        1.0,
+        1.0
+      ]
+    },
+    "Low-amp": {
+      "amplitude_scale": 0.6,
+      "bias_std": 0.0,
+      "name": "Low-amp",
+      "noise_std": 0.0,
+      "rotation_degrees": 0.0,
+      "speed_range": [
+        1.0,
+        1.0
+      ]
+    },
+    "Noisy": {
+      "amplitude_scale": 1.0,
+      "bias_std": 0.03,
+      "name": "Noisy",
+      "noise_std": 0.08,
+      "rotation_degrees": 0.0,
+      "speed_range": [
+        1.0,
+        1.0
+      ]
+    },
+    "Normal": {
+      "amplitude_scale": 1.0,
+      "bias_std": 0.0,
+      "name": "Normal",
+      "noise_std": 0.0,
+      "rotation_degrees": 0.0,
+      "speed_range": [
+        1.0,
+        1.0
+      ]
+    },
+    "Rotated": {
+      "amplitude_scale": 1.0,
+      "bias_std": 0.04,
+      "name": "Rotated",
+      "noise_std": 0.0,
+      "rotation_degrees": 35.0,
+      "speed_range": [
+        1.0,
+        1.0
+      ]
+    },
+    "Slow": {
+      "amplitude_scale": 1.0,
+      "bias_std": 0.02,
+      "name": "Slow",
+      "noise_std": 0.0,
+      "rotation_degrees": 0.0,
+      "speed_range": [
+        0.8,
+        0.95
+      ]
+    }
+  },
+  "validation_episodes": 12,
+  "wilcoxon_comparisons": 10,
+  "window_stride_samples": 16,
+  "window_stride_seconds_at_20hz": 0.8
+}

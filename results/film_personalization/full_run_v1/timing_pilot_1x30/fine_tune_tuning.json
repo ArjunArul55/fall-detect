@@ -1,0 +1,163 @@
+{
+  "validation_threshold": 0.25,
+  "validation_calibration_policy": "one ADL calibration window per validation subject",
+  "configurations_per_method": 9,
+  "methods": {
+    "last_layer": {
+      "selected_config": {
+        "learning_rate": 0.01,
+        "epochs": 1
+      },
+      "selection_metrics": {
+        "validation_mean_f2": 0.9847754325282876,
+        "validation_mean_false_alarms_per_hour": 21.716965742251222
+      },
+      "configurations_tried": [
+        {
+          "learning_rate": 0.0001,
+          "epochs": 1,
+          "validation_mean_f2": 0.984644812606137,
+          "validation_mean_false_alarms_per_hour": 22.022838499184342,
+          "validation_subjects_with_falls": 5
+        },
+        {
+          "learning_rate": 0.0001,
+          "epochs": 5,
+          "validation_mean_f2": 0.984644812606137,
+          "validation_mean_false_alarms_per_hour": 22.022838499184342,
+          "validation_subjects_with_falls": 5
+        },
+        {
+          "learning_rate": 0.0001,
+          "epochs": 20,
+          "validation_mean_f2": 0.984644812606137,
+          "validation_mean_false_alarms_per_hour": 22.022838499184342,
+          "validation_subjects_with_falls": 5
+        },
+        {
+          "learning_rate": 0.001,
+          "epochs": 1,
+          "validation_mean_f2": 0.984644812606137,
+          "validation_mean_false_alarms_per_hour": 22.022838499184342,
+          "validation_subjects_with_falls": 5
+        },
+        {
+          "learning_rate": 0.001,
+          "epochs": 5,
+          "validation_mean_f2": 0.9847754325282876,
+          "validation_mean_false_alarms_per_hour": 21.716965742251222,
+          "validation_subjects_with_falls": 5
+        },
+        {
+          "learning_rate": 0.001,
+          "epochs": 20,
+          "validation_mean_f2": 0.984243790398388,
+          "validation_mean_false_alarms_per_hour": 21.716965742251222,
+          "validation_subjects_with_falls": 5
+        },
+        {
+          "learning_rate": 0.01,
+          "epochs": 1,
+          "validation_mean_f2": 0.9847754325282876,
+          "validation_mean_false_alarms_per_hour": 21.716965742251222,
+          "validation_subjects_with_falls": 5
+        },
+        {
+          "learning_rate": 0.01,
+          "epochs": 5,
+          "validation_mean_f2": 0.9841006072335541,
+          "validation_mean_false_alarms_per_hour": 20.799347471451878,
+          "validation_subjects_with_falls": 5
+        },
+        {
+          "learning_rate": 0.01,
+          "epochs": 20,
+          "validation_mean_f2": 0.9835332603844064,
+          "validation_mean_false_alarms_per_hour": 18.35236541598695,
+          "validation_subjects_with_falls": 5
+        }
+      ]
+    },
+    "full_model": {
+      "selected_config": {
+        "learning_rate": 0.001,
+        "epochs": 1
+      },
+      "selection_metrics": {
+        "validation_mean_f2": 0.9852882509284967,
+        "validation_mean_false_alarms_per_hour": 19.269983686786297
+      },
+      "configurations_tried": [
+        {
+          "learning_rate": 0.0001,
+          "epochs": 1,
+          "validation_mean_f2": 0.984644812606137,
+          "validation_mean_false_alarms_per_hour": 22.022838499184342,
+          "validation_subjects_with_falls": 5
+        },
+        {
+          "learning_rate": 0.0001,
+          "epochs": 5,
+          "validation_mean_f2": 0.9845051056462616,
+          "validation_mean_false_alarms_per_hour": 21.10522022838499,
+          "validation_subjects_with_falls": 5
+        },
+        {
+          "learning_rate": 0.0001,
+          "epochs": 20,
+          "validation_mean_f2": 0.9842341776428419,
+          "validation_mean_false_alarms_per_hour": 20.49347471451876,
+          "validation_subjects_with_falls": 5
+        },
+        {
+          "learning_rate": 0.001,
+          "epochs": 1,
+          "validation_mean_f2": 0.9852882509284967,
+          "validation_mean_false_alarms_per_hour": 19.269983686786297,
+          "validation_subjects_with_falls": 5
+        },
+        {
+          "learning_rate": 0.001,
+          "epochs": 5,
+          "validation_mean_f2": 0.9780012921834705,
+          "validation_mean_false_alarms_per_hour": 12.54078303425775,
+          "validation_subjects_with_falls": 5
+        },
+        {
+          "learning_rate": 0.001,
+          "epochs": 20,
+          "validation_mean_f2": 0.9432932753694887,
+          "validation_mean_false_alarms_per_hour": 8.564437194127244,
+          "validation_subjects_with_falls": 5
+        },
+        {
+          "learning_rate": 0.01,
+          "epochs": 1,
+          "validation_mean_f2": 0.7582201604606291,
+          "validation_mean_false_alarms_per_hour": 3.364600326264274,
+          "validation_subjects_with_falls": 5
+        },
+        {
+          "learning_rate": 0.01,
+          "epochs": 5,
+          "validation_mean_f2": 0.006639017888924762,
+          "validation_mean_false_alarms_per_hour": 0.0,
+          "validation_subjects_with_falls": 5
+        },
+        {
+          "learning_rate": 0.01,
+          "epochs": 20,
+          "validation_mean_f2": 0.09358490566037736,
+          "validation_mean_false_alarms_per_hour": 0.30587275693311583,
+          "validation_subjects_with_falls": 5
+        }
+      ]
+    }
+  },
+  "tie_breaking": [
+    "higher validation mean F2",
+    "lower validation mean false alarms per hour",
+    "fewer epochs",
+    "lower learning rate"
+  ]
+}

@@ -1,0 +1,39 @@
+{
+  "tested_k_values": [
+    2,
+    3,
+    4,
+    5
+  ],
+  "selected_k": 3,
+  "selection_rule": "Selected the simplest K within a near-tie of the best silhouette, while also keeping Davies-Bouldin and Calinski-Harabasz close to their best values and requiring each cluster to remain above a minimum cluster share threshold.",
+  "k3_statement": "k=3 is supported. The selected k=3 produced a meaningful low \u2192 medium \u2192 high intensity progression based on peak acceleration, RMS, gyroscope peak, and energy, with no cluster below the minimum cluster share threshold.",
+  "cluster_to_severity": {
+    "0": 0,
+    "2": 1,
+    "1": 2
+  },
+  "split_counts": {
+    "train": {
+      "fall_windows": 4484,
+      "low": 1659,
+      "medium": 1267,
+      "high": 1558
+    },
+    "val": {
+      "fall_windows": 1500,
+      "low": 561,
+      "medium": 421,
+      "high": 518
+    },
+    "test": {
+      "fall_windows": 1200,
+      "low": 457,
+      "medium": 304,
+      "high": 439
+    }
+  },
+  "anomaly_contamination": 0.02,
+  "anomaly_n_estimators": 256,
+  "anomaly_note": "Anomaly scores from Isolation Forest are decision_function outputs; larger values mean more normal samples. anomaly_flag == 1 denotes suspicious fall windows. Refined severity sets anomalous fall windows to -1 (uncertain)."
+}
