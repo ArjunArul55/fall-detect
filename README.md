@@ -10,7 +10,7 @@ The current processed dataset contains 84,123 windows of shape `(64, 6)`: 76,939
 - Fall labels are impact-centered: only windows containing the peak fall impact are labeled as fall.
 - Canonical severity labels use K=2 run `k2_20260914T055946Z`: Mild, Severe, and Uncertain (-1). Moderate/K=3 is superseded exploration and is not canonical.
 - Two supervised baselines are available: a compact 1D CNN and a compact CNN-LSTM.
-- The headline model-comparison threshold is `0.25`, selected on validation by maximum F2 and applied unchanged to test. `0.50` is a reference point; `0.20` is only a FiLM sensitivity row.
+- The headline model-comparison threshold is `0.25`, selected on validation by maximum F2 and applied unchanged to test. The FiLM sensitivity row reports that run's validation-retuned threshold as selected; `0.50` is a reference point.
 
 For the presentation roadmap, see [docs/PRESENTATION_GUIDE.md](docs/PRESENTATION_GUIDE.md). For the full generated report, metrics, artifact inventory, and CSV samples, see [docs/reports/PROJECT_STATUS_REPORT.md](docs/reports/PROJECT_STATUS_REPORT.md).
 
@@ -144,8 +144,9 @@ transformations to SisFall windows (`x_sim = x * g + b`). It uses the stored 26/
 train/validation/test subject split, five calibration-sampling seeds, and calibration sizes
 0/1/5/10/30. TimeGAN/TimeVAE is future work only, not part of the canonical experiment.
 The headline comparison uses threshold `0.25` for all models, selected by maximum F2 on
-validation and applied unchanged to test. Threshold `0.20` is a FiLM validation-retuned
-sensitivity row only; `0.50` is a reference point only. Test subjects are used only for
+validation and applied unchanged to test. The FiLM sensitivity row reports that run's
+validation-retuned threshold as selected; it may differ across runs. `0.50` is a reference
+point only. Test subjects are used only for
 calibration and final evaluation, never for meta-training or generator training.
 
 Results are written to a unique run directory under `results/film_personalization/`:
@@ -179,8 +180,9 @@ only. The CNN-LSTM weights currently on disk are recorded in
 | CNN-LSTM | 0.25 | Headline | 0.9606 | 0.9950 | 0.9775 | 0.9879 | 1.0000 | 1.0000 |
 
 The CNN-LSTM `0.25` threshold is the validation-selected maximum-F2 point in the stored
-threshold sweep. The `0.20` FiLM validation-retuned result is sensitivity analysis only;
-the project's `0.50` results are reference columns, not the headline comparison.
+threshold sweep. A FiLM validation-retuned threshold is sensitivity analysis only and is
+reported as selected for its run; the project's `0.50` results are reference columns,
+not the headline comparison.
 
 ## Tests
 
@@ -188,7 +190,7 @@ the project's `0.50` results are reference columns, not the headline comparison.
 pytest
 ```
 
-As of 2026-10-19, the verification run passed 31 tests with one expected synthetic-clustering convergence warning. Commit `6e8b4a96` contained 16 collected tests across four test files; commit `f50ac14` added 15 FiLM personalization tests in `tests/test_film_personalization.py`. The total increased by adding tests, not due to a collection/configuration change.
+Run `pytest` to verify the current test suite. The generated project status report runs pytest and records its current pass/fail counts.
 
 ## Notes
 

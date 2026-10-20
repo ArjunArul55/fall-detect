@@ -39,7 +39,11 @@ def md_table(frame: pd.DataFrame, limit: int | None = None) -> str:
 
 def csv_sections() -> list[str]:
     sections: list[str] = []
-    csv_files = sorted(path for path in ROOT.rglob("*.csv") if ".venv" not in path.parts)
+    csv_files = sorted(
+        path
+        for path in ROOT.rglob("*.csv")
+        if ".venv" not in path.parts and "deprecated_severity" not in path.parts
+    )
     for path in csv_files:
         relative = path.relative_to(ROOT).as_posix()
         frame = pd.read_csv(path)
@@ -70,7 +74,11 @@ def csv_sections() -> list[str]:
 
 def array_inventory() -> pd.DataFrame:
     rows: list[dict[str, Any]] = []
-    for path in sorted((ROOT / "data" / "processed").rglob("*.npy")):
+    for path in sorted(
+        path
+        for path in (ROOT / "data" / "processed").rglob("*.npy")
+        if "deprecated_severity" not in path.parts
+    ):
         array = np.load(path, allow_pickle=True)
         numeric = np.issubdtype(array.dtype, np.number)
         rows.append(
@@ -100,7 +108,11 @@ def model_summary(model: Any) -> str:
 
 def model_inventory() -> pd.DataFrame:
     rows: list[dict[str, Any]] = []
-    for path in sorted((ROOT / "data" / "processed").rglob("*.pkl")):
+    for path in sorted(
+        path
+        for path in (ROOT / "data" / "processed").rglob("*.pkl")
+        if "deprecated_severity" not in path.parts
+    ):
         try:
             with path.open("rb") as handle:
                 model = pickle.load(handle)
@@ -193,6 +205,8 @@ def build_report() -> str:
         "",
         "## 1. Executive Summary",
         "",
+        "**Locked reporting policy:** canonical severity is K=2 (`k2_20260914T055946Z`: Mild, Severe, Uncertain (-1)); K=3 is archived and non-canonical. All headline model metrics use threshold 0.25, selected on validation by maximum F2 and held fixed for test. The FiLM sensitivity row reports that run's validation-retuned threshold as selected; 0.50 is reference only.",
+        "",
         "This project includes raw SisFall ingestion, signal preprocessing, subject-wise splitting, normalized sliding-window generation, exploratory data analysis, impact-centered binary labeling, unsupervised fall-severity/anomaly analysis, and supervised CNN/CNN-LSTM fall-detection baselines.",
         "",
         "The current canonical binary dataset contains **84,123 windows** with shape `(64, 6)`: **76,939 ADL/background** windows and **7,184 impact-centered fall** windows. The six channels are normalized accelerometer and gyroscope channels. Severity labels are derived only for the 7,184 fall windows.",
@@ -241,6 +255,8 @@ def build_report() -> str:
         "The canonical current result is `0 = Mild`, `1 = Severe`, and `-1 = non-applicable or uncertain`. ADL/background windows are always `-1` for severity. KMeans is fitted only on train fall windows with `k=2`, `random_state=42`, and `n_init=20`. The Isolation Forest uses contamination 0.02, 256 estimators, and random state 42.",
         "",
         "The canonical post-Isolation Forest fall export contains 7,184 rows: train 4,484, validation 1,500, and test 1,200. Anomaly counts are train 90 (2.01%), validation 23 (1.53%), and test 24 (2.00%). Anomalous fall windows are uncertain, not automatically bad data; review or exclude them deliberately during modeling.",
+        "",
+        "Uncertain (`-1`) fall windows show elevated peak gyro magnitude (split medians about 5.9–7.0k, versus about 4.2–4.6k for Severe) and are enriched 6.5–7.4x in the top-decile gyro windows relative to their overall split share. They are masked from severity loss and reported separately; this indicates an anomaly association, not clinical severity.",
         "",
         "### Important artifact consistency note",
         "",

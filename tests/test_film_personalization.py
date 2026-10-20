@@ -11,9 +11,11 @@ from src.personalization.film import UserEncoder, film_probabilities
 from src.personalization.film import train_user_encoder
 from src.personalization.evaluation import (
     calculate_metrics,
+    fine_tune_config_grid,
     fine_tune_baseline,
     paired_wilcoxon,
     predict_model_probabilities,
+    select_fine_tune_config,
 )
 from src.personalization.generator import (
     ConditionalTimeVAE,
@@ -64,6 +66,65 @@ def test_subject_ids_are_disjoint_and_aligned_with_windows():
     assert subject_sets["train"].isdisjoint(subject_sets["val"])
     assert subject_sets["train"].isdisjoint(subject_sets["test"])
     assert subject_sets["val"].isdisjoint(subject_sets["test"])
+
+
+def test_finetune_grid_and_selection_tie_breaking():
+    configs = fine_tune_config_grid()
+    assert len(configs) == 12
+    assert {config["learning_rate"] for config in configs} == {
+        1e-4,
+        1e-3,
+        1e-2,
+        1e-1,
+    }
+    assert {config["epochs"] for config in configs} == {1, 5, 20}
+
+    equal_f2 = [
+        {
+            "learning_rate": 1e-2,
+            "epochs": 5,
+            "validation_mean_f2": 0.98,
+            "validation_mean_false_alarms_per_hour": 1.0,
+        },
+        {
+            "learning_rate": 1e-1,
+            "epochs": 1,
+            "validation_mean_f2": 0.98,
+            "validation_mean_false_alarms_per_hour": 1.0,
+        },
+        {
+            "learning_rate": 1e-3,
+            "epochs": 1,
+            "validation_mean_f2": 0.98,
+            "validation_mean_false_alarms_per_hour": 2.0,
+        },
+    ]
+    selected = select_fine_tune_config(equal_f2)
+    assert selected["epochs"] == 1
+    assert selected["learning_rate"] == 1e-1
+    lower_lr_tie = [
+        {
+            "learning_rate": 1e-2,
+            "epochs": 1,
+            "validation_mean_f2": 0.98,
+            "validation_mean_false_alarms_per_hour": 1.0,
+        },
+        {
+            "learning_rate": 1e-3,
+            "epochs": 1,
+            "validation_mean_f2": 0.98,
+            "validation_mean_false_alarms_per_hour": 1.0,
+        },
+    ]
+    assert select_fine_tune_config(lower_lr_tie)["learning_rate"] == 1e-3
+
+    higher_f2 = {
+        "learning_rate": 1e-1,
+        "epochs": 20,
+        "validation_mean_f2": 0.981,
+        "validation_mean_false_alarms_per_hour": 100.0,
+    }
+    assert select_fine_tune_config([*equal_f2, higher_f2]) is higher_f2
 
 
 def test_parametric_user_profiles_are_seeded_and_shape_preserving():

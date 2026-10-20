@@ -10,11 +10,11 @@ Sentence to use in slides/reports:
 
 D2. Threshold policy
 - The headline threshold for every model in the comparison is 0.25, selected on validation only by maximum F2, and applied unchanged to test.
-- 0.20 is a FiLM validation-retuned sensitivity row only. 0.50 is a reference column only.
+- The FiLM sensitivity row is the validation-retuned threshold of that run, reported as selected; it is not fixed across runs (smoke run: 0.20; timing pilot: 0.85). 0.50 is a reference column only.
 - Rationale: selecting on validation and freezing the threshold prevents test-set leakage and gives the model comparison one common operating point.
 
 Sentence to use in slides/reports:
-“The headline comparison uses a threshold of 0.25, selected on validation by maximum F2 and applied unchanged to test. The 0.20 FiLM row is sensitivity analysis only; 0.50 is shown as a reference.”
+“The headline comparison uses a threshold of 0.25, selected on validation by maximum F2 and applied unchanged to test. The FiLM sensitivity row reports that run’s validation-retuned threshold as selected; 0.50 is shown as a reference.”
 
 D3. Synthetic users
 - Final synthetic-user method: parametric per-channel gain/offset on SisFall windows: `x_sim = x * g + b`.
@@ -35,3 +35,4 @@ Sentence to use in slides/reports:
 
 - FiLM results currently cited are from `results/film_personalization/prototype_run_final_smoke_v2/`, run with `--epochs 2 --episodes-per-epoch 3`; a full-length run is pending.
 - Slide-quoted FiLM k=1 standard deviations of 11.21 and 11.26 are not supported for that k=1 comparison. The persisted run reports FiLM k=1 at 0.25 as `12.6909 +/- 9.4835` versus Global `15.1052 +/- 11.2360`.
+- Uncertain (`-1`) fall windows are extreme-gyro outliers: split medians are about 5.9–7.0k versus 4.2–4.6k for Severe, and their share of top-decile gyro windows is 6.5–7.4x their overall share. They are masked from severity loss and reported separately; this is an anomaly association, not a clinical severity claim.

@@ -18,6 +18,9 @@ SAMPLE_RATE_HZ = 20.0
 WINDOW_STRIDE_SAMPLES = 16
 WINDOW_SECONDS_PER_ROW = WINDOW_STRIDE_SAMPLES / SAMPLE_RATE_HZ
 FALSE_ALARM_WINDOW_RATE_PER_HOUR = 3600.0 / WINDOW_SECONDS_PER_ROW
+FINE_TUNE_LEARNING_RATES = (1e-4, 1e-3, 1e-2, 1e-1)
+FINE_TUNE_EPOCHS = (1, 5, 20)
+CANONICAL_COMPARISON_THRESHOLD = 0.25
 
 
 def calculate_metrics(
@@ -106,6 +109,149 @@ def fine_tune_baseline(
             raise RuntimeError("Fine-tuning produced no gradients.")
         optimizer.apply_gradients(gradient_pairs)
     return model
+
+
+def fine_tune_config_grid() -> list[dict[str, float | int]]:
+    return [
+        {"learning_rate": learning_rate, "epochs": epochs}
+        for learning_rate in FINE_TUNE_LEARNING_RATES
+        for epochs in FINE_TUNE_EPOCHS
+    ]
+
+
+def select_fine_tune_config(configurations: list[dict[str, Any]]) -> dict[str, Any]:
+    if not configurations:
+        raise ValueError("At least one fine-tuning configuration is required.")
+    required = {
+        "validation_mean_f2",
+        "validation_mean_false_alarms_per_hour",
+        "epochs",
+        "learning_rate",
+    }
+    for configuration in configurations:
+        missing = required - configuration.keys()
+        if missing:
+            raise ValueError(f"Fine-tuning configuration is missing fields: {sorted(missing)}")
+        if not all(np.isfinite(float(configuration[key])) for key in required):
+            raise ValueError("Fine-tuning configuration selection values must be finite.")
+    return min(
+        configurations,
+        key=lambda row: (
+            -float(row["validation_mean_f2"]),
+            float(row["validation_mean_false_alarms_per_hour"]),
+            int(row["epochs"]),
+            float(row["learning_rate"]),
+        ),
+    )
+
+
+def tune_finetune_baselines(
+    original_model: Any,
+    validation_data: dict[str, np.ndarray],
+    *,
+    threshold: float = CANONICAL_COMPARISON_THRESHOLD,
+    calibration_seed: int = 1701,
+) -> dict[str, Any]:
+    """Select last-layer/full FT configs using validation F2 and ADL-only calibration."""
+
+    if threshold != CANONICAL_COMPARISON_THRESHOLD:
+        raise ValueError(
+            f"Fine-tuning selection must use the locked threshold "
+            f"{CANONICAL_COMPARISON_THRESHOLD:.2f}."
+        )
+    windows = np.asarray(validation_data["x"], dtype=np.float32)
+    labels = np.asarray(validation_data["y"], dtype=np.int32)
+    subjects = np.asarray(validation_data["subject"]).astype(str)
+    if len(windows) != len(labels) or len(labels) != len(subjects):
+        raise ValueError("Validation windows, labels, and subjects must align.")
+    if not np.isin(labels, [0, 1]).all():
+        raise ValueError("Validation labels must be binary.")
+
+    from src.personalization.simulator import split_user_calibration
+
+    subject_partitions = []
+    for index, subject in enumerate(sorted(np.unique(subjects))):
+        rows = subjects == subject
+        calibration_x, calibration_y, query_x, query_y = split_user_calibration(
+            windows[rows],
+            labels[rows],
+            max_calibration=1,
+            seed=calibration_seed + index,
+            allow_adl_only=True,
+        )
+        if len(calibration_x):
+            subject_partitions.append((calibration_x, calibration_y, query_x, query_y))
+    if not subject_partitions:
+        raise ValueError("Validation tuning requires at least one ADL calibration window.")
+
+    configs = fine_tune_config_grid()
+    methods: dict[str, Any] = {}
+    for method, full_model in (
+        ("last_layer", False),
+        ("full_model", True),
+    ):
+        tried = []
+        for config in configs:
+            metrics = []
+            for calibration_x, calibration_y, query_x, query_y in subject_partitions:
+                adapted = fine_tune_baseline(
+                    original_model,
+                    calibration_x,
+                    calibration_y,
+                    full_model=full_model,
+                    epochs=config["epochs"],
+                    learning_rate=config["learning_rate"],
+                )
+                probabilities = predict_model_probabilities(adapted, query_x)
+                metrics.append(calculate_metrics(query_y, probabilities, threshold))
+            f2_values = [
+                row["f2"] for row in metrics if np.isfinite(row["f2"])
+            ]
+            false_alarm_values = [
+                row["false_alarms_per_hour"]
+                for row in metrics
+                if np.isfinite(row["false_alarms_per_hour"])
+            ]
+            if not f2_values or not false_alarm_values:
+                raise ValueError(
+                    f"Validation tuning for {method} produced no finite F2 or false-alarm metrics."
+                )
+            tried.append(
+                {
+                    **config,
+                    "validation_mean_f2": float(np.mean(f2_values)),
+                    "validation_mean_false_alarms_per_hour": float(
+                        np.mean(false_alarm_values)
+                    ),
+                    "validation_subjects_with_falls": len(f2_values),
+                }
+            )
+        selected = select_fine_tune_config(tried)
+        methods[method] = {
+            "selected_config": {
+                "learning_rate": selected["learning_rate"],
+                "epochs": selected["epochs"],
+            },
+            "selection_metrics": {
+                "validation_mean_f2": selected["validation_mean_f2"],
+                "validation_mean_false_alarms_per_hour": selected[
+                    "validation_mean_false_alarms_per_hour"
+                ],
+            },
+            "configurations_tried": tried,
+        }
+    return {
+        "validation_threshold": threshold,
+        "validation_calibration_policy": "one ADL calibration window per validation subject",
+        "configurations_per_method": len(configs),
+        "methods": methods,
+        "tie_breaking": [
+            "higher validation mean F2",
+            "lower validation mean false alarms per hour",
+            "fewer epochs",
+            "lower learning rate",
+        ],
+    }
 
 
 def predict_model_probabilities(model: Any, windows: np.ndarray, batch_size: int = 2048) -> np.ndarray:

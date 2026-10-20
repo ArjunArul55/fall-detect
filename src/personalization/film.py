@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from collections.abc import Mapping
+import time
 from typing import Any
 
 import numpy as np
@@ -232,6 +233,7 @@ def train_user_encoder(
     best_epoch = 0
 
     for epoch in range(epochs):
+        epoch_started = time.perf_counter()
         training_losses: list[float] = []
         for _ in range(episodes_per_epoch):
             calibration, query, query_labels = _sample_episode(
@@ -274,7 +276,14 @@ def train_user_encoder(
             validation_losses.append(float(loss.numpy()))
         train_loss = float(np.mean(training_losses))
         val_loss = float(np.mean(validation_losses))
-        history.append({"epoch": float(epoch + 1), "train_loss": train_loss, "val_loss": val_loss})
+        history.append(
+            {
+                "epoch": float(epoch + 1),
+                "train_loss": train_loss,
+                "val_loss": val_loss,
+                "epoch_seconds": time.perf_counter() - epoch_started,
+            }
+        )
         if val_loss < best_loss:
             best_loss = val_loss
             best_weights = encoder.get_weights()

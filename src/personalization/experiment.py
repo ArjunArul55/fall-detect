@@ -26,6 +26,7 @@ from src.personalization.evaluation import (
     save_metric_plots,
     summarize_per_user_seeds,
     summarize_results,
+    tune_finetune_baselines,
     write_results_manifest,
 )
 from src.personalization.film import (
@@ -90,7 +91,7 @@ def _load_arrays() -> dict[str, dict[str, np.ndarray]]:
 
 
 def _threshold_from_metadata() -> float:
-    """Read the canonical 0.25 validation maximum-F2 threshold; 0.20 is sensitivity-only."""
+    """Read the canonical 0.25 threshold; a run's validation-retuned value is sensitivity-only."""
     metadata = json.loads((BASELINE_DIR / "run_metadata.json").read_text(encoding="utf-8"))
     threshold = metadata.get("chosen_threshold", {}).get("threshold")
     if threshold is None:
@@ -230,10 +231,12 @@ def evaluate_users(
     retuned_threshold: float,
     seeds: tuple[int, ...] = RANDOM_SEEDS,
     finetune_epochs: int = 3,
+    fine_tune_configs: dict[str, Any] | None = None,
 ) -> pd.DataFrame:
     """Compare global, fine-tuned, and FiLM systems on real and shifted users."""
 
     rows: list[dict[str, Any]] = []
+    probability_shift_rows: list[dict[str, Any]] = []
     subjects = sorted(np.unique(test_data["subject"]))
     subjects_with_falls = [
         subject
@@ -358,14 +361,52 @@ def evaluate_users(
                         if uses_falls
                         else calibration
                     )
+                    method_key = "full_model" if is_full else "last_layer"
+                    selected_config = (
+                        fine_tune_configs["methods"][method_key]["selected_config"]
+                        if fine_tune_configs and not uses_falls
+                        else {"epochs": finetune_epochs, "learning_rate": 1e-4}
+                    )
                     adapted = fine_tune_baseline(
                         components.original,
                         fit_x,
                         fit_labels,
                         full_model=is_full,
-                        epochs=finetune_epochs,
+                        epochs=int(selected_config["epochs"]),
+                        learning_rate=float(selected_config["learning_rate"]),
                     )
                     probabilities = predict_model_probabilities(adapted, eval_x)
+                    if k == 1 and not uses_falls:
+                        for label, label_name in ((0, "ADL"), (1, "Fall")):
+                            group = eval_y == label
+                            if np.any(group):
+                                differences = probabilities[group] - global_probabilities[group]
+                                probability_shift_rows.append(
+                                    {
+                                        "evaluation": evaluation,
+                                        "profile": profile,
+                                        "subject_id": subject,
+                                        "seed": seed,
+                                        "method": method_key,
+                                        "label_group": label_name,
+                                        "windows": int(group.sum()),
+                                        "signed_mean_probability_shift": float(
+                                            np.mean(differences)
+                                        ),
+                                        "absolute_mean_probability_shift": float(
+                                            np.mean(np.abs(differences))
+                                        ),
+                                        "threshold_crossings_vs_global": int(
+                                            np.count_nonzero(
+                                                (probabilities[group] >= canonical_threshold)
+                                                != (
+                                                    global_probabilities[group]
+                                                    >= canonical_threshold
+                                                )
+                                            )
+                                        ),
+                                    }
+                                )
                     _append_metric(
                         rows,
                         evaluation=evaluation,
@@ -409,6 +450,25 @@ def evaluate_users(
 
     metrics = pd.DataFrame(rows)
     metrics.to_csv(output_dir / "per_user_metrics.csv", index=False)
+    shifts = pd.DataFrame(probability_shift_rows)
+    shifts.to_csv(output_dir / "fine_tune_probability_shifts.csv", index=False)
+    if not shifts.empty:
+        shift_summary = (
+            shifts.groupby(["evaluation", "method", "label_group"], as_index=False)
+            .agg(
+                windows=("windows", "sum"),
+                signed_mean_probability_shift=("signed_mean_probability_shift", "mean"),
+                absolute_mean_probability_shift=(
+                    "absolute_mean_probability_shift",
+                    "mean",
+                ),
+                threshold_crossings_vs_global=("threshold_crossings_vs_global", "sum"),
+                subject_seed_rows=("subject_id", "size"),
+            )
+        )
+        shift_summary.to_csv(
+            output_dir / "fine_tune_probability_shift_summary.csv", index=False
+        )
     return metrics
 
 
@@ -470,6 +530,64 @@ def write_summary_from_csvs(output_dir: Path, command: str) -> None:
             f"| {row.evaluation} | {row.comparison} | {int(row.n_subjects)} "
             f"| {row.wilcoxon_statistic:.4g} | {row.p_value:.4g} |"
         )
+    tuning_path = output_dir / "fine_tune_tuning.json"
+    if tuning_path.is_file():
+        tuning = json.loads(tuning_path.read_text(encoding="utf-8"))
+        lines.extend(
+            [
+                "",
+                "## Validation tuning and probability shifts",
+                "",
+                f"Fine-tuning configurations were selected on validation F2 at "
+                f"threshold {float(tuning['validation_threshold']):.2f}; "
+                f"each method tried {int(tuning['configurations_per_method'])} configs. "
+                "Test probability shifts are reporting-only.",
+                "",
+                "| Comparison method | Selection/tuning data | Configurations tried |",
+                "|---|---|---:|",
+                "| Global | Frozen canonical baseline; shared threshold 0.25 | 0 new configs |",
+                "| Last-layer FT | Validation F2 at 0.25; one ADL calibration window/user | "
+                f"{int(tuning['configurations_per_method'])} |",
+                "| Full FT | Validation F2 at 0.25; one ADL calibration window/user | "
+                f"{int(tuning['configurations_per_method'])} |",
+                "| FiLM | Train-subject episodes; validation early stopping/threshold | "
+                "1 run configuration |",
+                "",
+                "| Method | Selected learning rate | Selected epochs | Validation F2 | Validation FA/hr |",
+                "|---|---:|---:|---:|---:|",
+            ]
+        )
+        for method_key, label in (
+            ("last_layer", "Last-layer FT"),
+            ("full_model", "Full FT"),
+        ):
+            method = tuning["methods"][method_key]
+            config_selected = method["selected_config"]
+            metrics_selected = method["selection_metrics"]
+            lines.append(
+                f"| {label} | {config_selected['learning_rate']:.0e} "
+                f"| {config_selected['epochs']} | {metrics_selected['validation_mean_f2']:.4f} "
+                f"| {metrics_selected['validation_mean_false_alarms_per_hour']:.4f} |"
+            )
+        shift_path = output_dir / "fine_tune_probability_shift_summary.csv"
+        if shift_path.is_file():
+            shifts = pd.read_csv(shift_path)
+            lines.extend(
+                [
+                    "",
+                    "| Method | Test subset | Signed mean shift | Absolute mean shift | Threshold crossings |",
+                    "|---|---|---:|---:|---:|",
+                ]
+            )
+            for row in shifts[shifts["evaluation"] == "real_heldout"].itertuples(
+                index=False
+            ):
+                lines.append(
+                    f"| {row.method} | {row.label_group} | "
+                    f"{row.signed_mean_probability_shift:.6f} | "
+                    f"{row.absolute_mean_probability_shift:.6f} | "
+                    f"{int(row.threshold_crossings_vs_global)} |"
+                )
     lines.extend(
         [
             "",
@@ -571,6 +689,16 @@ def run_experiment(
     retuned_threshold = _tune_validation_threshold(
         components, encoder, data["val"], simulator, seed + 211
     )
+    fine_tune_tuning = tune_finetune_baselines(
+        components.original,
+        data["val"],
+        threshold=canonical_threshold,
+        calibration_seed=seed + 1701,
+    )
+    (output_dir / "fine_tune_tuning.json").write_text(
+        json.dumps(fine_tune_tuning, indent=2) + "\n",
+        encoding="utf-8",
+    )
     (output_dir / "thresholds.json").write_text(
         json.dumps(
             {
@@ -593,6 +721,7 @@ def run_experiment(
         retuned_threshold=retuned_threshold,
         seeds=seeds,
         finetune_epochs=finetune_epochs,
+        fine_tune_configs=fine_tune_tuning,
     )
     summarize_per_user_seeds(metrics, output_dir)
     summary = summarize_results(metrics, output_dir)
@@ -647,6 +776,7 @@ def run_experiment(
         "window_stride_seconds_at_20hz": WINDOW_STRIDE_SAMPLES / 20.0,
         "canonical_threshold": canonical_threshold,
         "film_validation_threshold": retuned_threshold,
+        "fine_tune_tuning": fine_tune_tuning,
         "generator_quality": generator_quality,
         "deployment": deployment,
         "summary_rows": int(len(summary)),
@@ -664,6 +794,7 @@ def run_experiment(
         ("validation_episodes", validation_episodes),
         ("patience", patience),
         ("fine_tune_epochs", finetune_epochs),
+        ("fine_tune_tuning_json", json.dumps(fine_tune_tuning, sort_keys=True)),
         ("timevae_epochs", timevae_epochs),
         ("sample_rate_hz", 20.0),
         ("window_stride_samples", WINDOW_STRIDE_SAMPLES),

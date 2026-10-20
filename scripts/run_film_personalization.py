@@ -51,10 +51,14 @@ def main() -> None:
     print("[Step 2] Using seeded parametric users; TimeVAE is experimental future work.")
     print("[Step 3] Meta-training only the UserEncoder on train-subject episodes.")
     print("[Step 4-5] Evaluating held-out users with repeated calibration seeds.")
-    reproduction_command = subprocess.list2cmdline(
+    reproduction_args = [
+        sys.executable,
+        "scripts\\run_film_personalization.py",
+    ]
+    if args.output_dir is not None:
+        reproduction_args.extend(["--output-dir", str(args.output_dir)])
+    reproduction_args.extend(
         [
-            sys.executable,
-            "scripts\\run_film_personalization.py",
             "--seed",
             str(args.seed),
             "--epochs",
@@ -73,6 +77,7 @@ def main() -> None:
             str(args.timevae_epochs),
         ]
     )
+    reproduction_command = subprocess.list2cmdline(reproduction_args)
     output_dir = run_experiment(
         output_dir=args.output_dir,
         seed=args.seed,
