@@ -457,23 +457,28 @@ def train_multitask_pipeline(output_dir: Path, smoke: bool = False, max_epochs: 
         best_epoch_weights = None
         best_epoch_info = None
 
+        @tf.function
+        def train_step(bx, by_bin, by_sev):
+            with tf.GradientTape() as tape:
+                outputs = model(bx, training=True)
+                tot_l, b_l, s_l = compute_multitask_loss(
+                    by_bin,
+                    by_sev,
+                    outputs["binary_output"],
+                    outputs["severity_logits"],
+                    w_bin,
+                    w_sev,
+                    lambda_weight=lam,
+                )
+            grads = tape.gradient(tot_l, model.trainable_variables)
+            optimizer.apply_gradients(zip(grads, model.trainable_variables))
+            return tot_l
+
         all_candidates_recorded = []
         for epoch in range(1, n_epochs + 1):
             epoch_losses = []
             for bx, by_bin, by_sev in train_ds:
-                with tf.GradientTape() as tape:
-                    outputs = model(bx, training=True)
-                    tot_l, b_l, s_l = compute_multitask_loss(
-                        by_bin,
-                        by_sev,
-                        outputs["binary_output"],
-                        outputs["severity_logits"],
-                        w_bin,
-                        w_sev,
-                        lambda_weight=lam,
-                    )
-                grads = tape.gradient(tot_l, model.trainable_variables)
-                optimizer.apply_gradients(zip(grads, model.trainable_variables))
+                tot_l = train_step(bx, by_bin, by_sev)
                 epoch_losses.append(float(tot_l.numpy()))
 
             # Validation evaluation

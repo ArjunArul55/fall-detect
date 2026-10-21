@@ -1,0 +1,291 @@
+{
+  "task": "TASK P2: multi-task severity head",
+  "timestamp_utc": "2026-10-21T12:20:59.455639+00:00",
+  "seed": 42,
+  "training_time_seconds": 111.28809109999565,
+  "best_selection": {
+    "lambda": 1.0,
+    "epoch": 6,
+    "train_loss": 1.2210459597666874,
+    "val_binary_f2": 0.3562182376066737,
+    "val_chosen_threshold": 0.2,
+    "val_severity_macro_f1": 0.3835559265442404,
+    "eligible": false
+  },
+  "candidates_evaluated": [],
+  "validation_selection_rule": "Binary F2 >= 0.979658 (baseline val F2 - 0.005); highest severity macro-F1 on confident validation falls.",
+  "threshold_policy": "D2 rule (validation max F2, tie-break FA/hr), frozen to test; 0.50 reference.",
+  "chosen_threshold": 0.2,
+  "metrics": {
+    "binary_test_chosen_threshold": {
+      "threshold": 0.2,
+      "accuracy": 0.09899464298818522,
+      "precision": 0.08830087706258362,
+      "recall": 0.99,
+      "f1": 0.1621400300259315,
+      "f2": 0.3254081297249918,
+      "fa_per_hour": 4441.699525227327,
+      "auroc": 0.5036268139266651,
+      "auprc": 0.46307125332334503,
+      "confusion_matrix": [
+        [
+          161,
+          12266
+        ],
+        [
+          12,
+          1188
+        ]
+      ]
+    },
+    "binary_test_reference_0_50": {
+      "threshold": 0.5,
+      "accuracy": 0.9119395318118442,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "f2": 0.0,
+      "fa_per_hour": 0.0,
+      "auroc": 0.5036268139266651,
+      "auprc": 0.46307125332334503,
+      "confusion_matrix": [
+        [
+          12427,
+          0
+        ],
+        [
+          1200,
+          0
+        ]
+      ]
+    },
+    "baseline_comparison": {
+      "cnn_lstm_baseline_test_recall": 0.995,
+      "multitask_test_recall": 0.99,
+      "recall_regressed": true
+    },
+    "severity_confident_falls": {
+      "n_samples": 1176,
+      "mild": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "support": 457
+      },
+      "severe": {
+        "precision": 0.6113945578231292,
+        "recall": 1.0,
+        "f1": 0.7588390501319261,
+        "support": 719
+      },
+      "macro_f1": 0.37941952506596305,
+      "confusion_matrix": [
+        [
+          0,
+          457
+        ],
+        [
+          0,
+          719
+        ]
+      ]
+    },
+    "severity_recording_level": {
+      "n_recordings": 297,
+      "confusion_matrix": [
+        [
+          0,
+          114
+        ],
+        [
+          0,
+          183
+        ]
+      ],
+      "macro_f1": 0.38125
+    },
+    "severity_subject_level": {
+      "per_subject_details": {
+        "SA02": {
+          "n_confident_fall_windows": 285,
+          "true_mild": 109,
+          "true_severe": 176,
+          "pred_mild": 0,
+          "pred_severe": 285,
+          "confusion_matrix": [
+            [
+              0,
+              109
+            ],
+            [
+              0,
+              176
+            ]
+          ],
+          "macro_f1": 0.38177874186550975
+        },
+        "SA03": {
+          "n_confident_fall_windows": 297,
+          "true_mild": 128,
+          "true_severe": 169,
+          "pred_mild": 0,
+          "pred_severe": 297,
+          "confusion_matrix": [
+            [
+              0,
+              128
+            ],
+            [
+              0,
+              169
+            ]
+          ],
+          "macro_f1": 0.3626609442060086
+        },
+        "SA09": {
+          "n_confident_fall_windows": 297,
+          "true_mild": 124,
+          "true_severe": 173,
+          "pred_mild": 0,
+          "pred_severe": 297,
+          "confusion_matrix": [
+            [
+              0,
+              124
+            ],
+            [
+              0,
+              173
+            ]
+          ],
+          "macro_f1": 0.3680851063829787
+        },
+        "SA14": {
+          "n_confident_fall_windows": 297,
+          "true_mild": 96,
+          "true_severe": 201,
+          "pred_mild": 0,
+          "pred_severe": 297,
+          "confusion_matrix": [
+            [
+              0,
+              96
+            ],
+            [
+              0,
+              201
+            ]
+          ],
+          "macro_f1": 0.4036144578313253
+        },
+        "SE11": {
+          "n_confident_fall_windows": 0,
+          "true_mild": 0,
+          "true_severe": 0,
+          "pred_mild": 0,
+          "pred_severe": 0,
+          "confusion_matrix": [
+            [
+              0,
+              0
+            ],
+            [
+              0,
+              0
+            ]
+          ],
+          "macro_f1": NaN,
+          "note": "ADL-only subject (no falls)"
+        },
+        "SE14": {
+          "n_confident_fall_windows": 0,
+          "true_mild": 0,
+          "true_severe": 0,
+          "pred_mild": 0,
+          "pred_severe": 0,
+          "confusion_matrix": [
+            [
+              0,
+              0
+            ],
+            [
+              0,
+              0
+            ]
+          ],
+          "macro_f1": NaN,
+          "note": "ADL-only subject (no falls)"
+        }
+      },
+      "subject_level_confusion_matrix": [
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          4
+        ]
+      ]
+    },
+    "severity_on_predicted_falls": {
+      "total_windows_predicted_fall": 13454,
+      "true_mild_falls_in_pred": 451,
+      "true_severe_falls_in_pred": 714,
+      "true_uncertain_falls_in_pred": 23,
+      "false_alarm_adl_in_pred": 12266,
+      "predicted_mild_count": 0,
+      "predicted_severe_count": 13454
+    },
+    "uncertain_minus1_binary_recall": {
+      "total_uncertain_fall_windows": 24,
+      "uncertain_fall_windows_detected_as_fall": 23,
+      "uncertain_binary_recall": 0.9583333333333334,
+      "note": "Uncertain (-1) windows are extreme gyro outliers; they stay in binary detection but are masked from severity loss."
+    },
+    "severity_context_baselines": {
+      "majority_class_baseline": {
+        "predicted_class": 1,
+        "macro_f1": 0.37941952506596305,
+        "confusion_matrix": [
+          [
+            0,
+            457
+          ],
+          [
+            0,
+            719
+          ]
+        ]
+      },
+      "logistic_regression_baseline": {
+        "features": [
+          "peak_smv",
+          "peak_gyro_magnitude"
+        ],
+        "macro_f1": 0.4468165173466877,
+        "mild": {
+          "precision": 0.37184594953519257,
+          "recall": 0.612691466083151,
+          "f1": 0.4628099173553719
+        },
+        "severe": {
+          "precision": 0.5815602836879432,
+          "recall": 0.34214186369958277,
+          "f1": 0.4308231173380035
+        },
+        "confusion_matrix": [
+          [
+            280,
+            177
+          ],
+          [
+            473,
+            246
+          ]
+        ]
+      },
+      "circularity_disclosure": "Ground-truth severity labels were obtained via unsupervised K-Means on signal-derived features (peak acc, gyro, energy). Therefore, feature-based Logistic Regression partly re-predicts the clustering input features. The multi-task neural network's gain must be evaluated honestly against this baseline without claiming clinical ground truth."
+    }
+  }
+}
