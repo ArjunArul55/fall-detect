@@ -59,7 +59,7 @@ This document provides a technical handoff for the **AI-Based Wearable Fall Dete
 | :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :--- |
 | **CNN (binary)** | 0.20 | 0.9965 | 0.9683 | 0.9925 | 0.9802 | 0.9876 | 14.12 | *UNVERIFIED* | *UNVERIFIED* | 33,729 | N/A | `results/cnn_baseline/run_metadata.json` |
 | **CNN-LSTM (binary)** | 0.25 | 0.9960 | 0.9606 | 0.9950 | 0.9775 | 0.9879 | 17.74 | 0.9998 | 0.9987 | 46,817 | N/A | `results/cnn_lstm_baseline/run_metadata.json` |
-| **CNN-LSTM + severity head** | 0.25 | *UNVERIFIED* | *UNVERIFIED* | *UNVERIFIED* | *UNVERIFIED* | *UNVERIFIED* | *UNVERIFIED* | *UNVERIFIED* | *UNVERIFIED* | 46,883 | *UNVERIFIED* | Architecture & tests verified; training pending local `.npy` |
+| **CNN-LSTM + severity head** | 0.20 | 0.0990 | 0.0883 | 0.9900 | 0.1621 | 0.3254 | 4441.70 | 0.5036 | 0.4631 | 46,883 | 0.3794 | `results/severity_multitask/run_v1/run_metadata.json` |
 | **FiLM (k=1, exploratory)** | 0.60 | 0.9932 | 0.9720 | 0.9554 | 0.9738 | 0.9840 | 16.64 | 0.9998 | 0.9985 | 46,945 | N/A | `results/film_personalization/full_run_v1` |
 | **FiLM (k=30, exploratory)** | 0.75 | 0.9943 | 0.9693 | 0.9692 | 0.9787 | 0.9880 | 14.03 | 0.9998 | 0.9986 | 46,945 | N/A | `results/film_personalization/full_run_v1` |
 
@@ -166,13 +166,16 @@ To run this repository on a fresh environment:
 1. **ESP32 Physical Hardware Latency**: UNVERIFIED. Quantization latency ($0.03\text{ ms}$) was measured on x86_64 CPU (`num_threads=1`). Physical execution latency on a real ESP32 microcontroller remains unverified until firmware integration.
 2. **Real-World Geriatric Fall Accuracy**: UNVERIFIED. All evaluations are grounded in the SisFall lab benchmark; real-world clinical efficacy remains unverified.
 3. **CNN Baseline Test AUROC/AUPRC**: UNVERIFIED. Continuous probability vectors were not saved in the legacy `results/cnn_baseline/run_metadata.json` checkpoint.
-4. **CNN-LSTM Multi-Task Retrained Checkpoint on Local Disk**: UNVERIFIED. Multi-task architecture and masked loss unit tests pass, but end-to-end trained weights require local `.npy` training execution.
 
 ---
 
 ## 7. Git Commit Log (`git log --oneline -15`)
 
 ```text
+a66386c docs(p4): regenerate project report and status report with verified real-data multi-task run
+995483c feat(p3): update comparison table and baseline severity eval with verified real-data metrics
+4a9b64b feat(p2): complete real data training of multi-task severity head and evaluate on test set
+37d21cc docs(p7): create technical handoff and final verification summary in HANDOFF.md
 368a0aa feat(p6): implement streaming detector, demo cli, streamlit dashboard, demo script, and tests
 a749f11 feat(p5): implement tflite quantization pipeline, export esp32 c header, and add test suite
 f4112df docs(p4): regenerate project report and status report per D1-D4 and P4 requirements
