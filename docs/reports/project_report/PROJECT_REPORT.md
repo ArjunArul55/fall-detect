@@ -1,7 +1,7 @@
 # Fall Detection System — End-to-End Project Report
 
-- **Generated**: 2026-10-21 12:24 UTC
-- **Git Commit**: `995483c`
+- **Generated**: 2026-10-21 12:44 UTC
+- **Git Commit**: `fae9b40`
 - **Canonical Severity Run**: `k2_20260914T055946Z`
 - **Locked Decision Rules**:
   - **D1**: Canonical severity scheme is strictly K=2 (`k2_20260914T055946Z`: 0=Mild, 1=Severe, -1=Uncertain).

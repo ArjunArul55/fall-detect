@@ -89,28 +89,30 @@ The repository contains artifacts from multiple severity-analysis runs. The cano
 | data/processed/severity/runs/k2_20260914T055946Z/val_anomaly_scores.npy | (1500,) | float64 | -0.0325907 | 0.136228 |
 | data/processed/severity/runs/k2_20260914T055946Z/val_refined_severity_labels.npy | (15073,) | int64 | -1 | 1 |
 | data/processed/severity/runs/k2_20260914T055946Z/val_severity_labels.npy | (15073,) | int64 | -1 | 1 |
-| data/processed/test.npy | (13627, 64, 6) | float32 | -14.5826 | 14.8867 |
+| data/processed/test.npy | (13627, 64, 6) | float32 | -48.5212 | 20.0049 |
 | data/processed/test_activity_labels.npy | (13627,) | int64 | 1 | 34 |
 | data/processed/test_labels.npy | (13627,) | int64 | 0 | 1 |
-| data/processed/test_recording_ids.npy | (13627,) | object |  |  |
+| data/processed/test_recording_ids.npy | (13627,) | <U21 |  |  |
 | data/processed/test_severity_labels.npy | (13627,) | int64 | -1 | 2 |
-| data/processed/test_subject_ids.npy | (13627,) | object |  |  |
-| data/processed/train.npy | (55423, 64, 6) | float32 | -14.8454 | 14.8555 |
+| data/processed/test_subject_ids.npy | (13627,) | <U4 |  |  |
+| data/processed/train.npy | (55423, 64, 6) | float32 | -38.0956 | 38.1595 |
 | data/processed/train_activity_labels.npy | (55423,) | int64 | 1 | 34 |
 | data/processed/train_generative.npy | (64439, 64, 6) | float64 | -16.0203 | 15.5162 |
 | data/processed/train_generative_activity.npy | (64439,) | int64 | 1 | 34 |
 | data/processed/train_generative_labels.npy | (64439,) | int64 | 0 | 1 |
 | data/processed/train_generative_severity.npy | (64439,) | int64 | -1 | 2 |
 | data/processed/train_labels.npy | (55423,) | int64 | 0 | 1 |
-| data/processed/train_recording_ids.npy | (55423,) | object |  |  |
+| data/processed/train_recording_ids.npy | (55423,) | <U21 |  |  |
 | data/processed/train_severity_labels.npy | (55423,) | int64 | -1 | 2 |
-| data/processed/train_subject_ids.npy | (55423,) | object |  |  |
-| data/processed/val.npy | (15073, 64, 6) | float32 | -14.3393 | 14.647 |
+| data/processed/train_subject_ids.npy | (55423,) | <U4 |  |  |
+| data/processed/val.npy | (15073, 64, 6) | float32 | -18.9812 | 18.5895 |
 | data/processed/val_activity_labels.npy | (15073,) | int64 | 1 | 34 |
 | data/processed/val_labels.npy | (15073,) | int64 | 0 | 1 |
-| data/processed/val_recording_ids.npy | (15073,) | object |  |  |
+| data/processed/val_recording_ids.npy | (15073,) | <U21 |  |  |
 | data/processed/val_severity_labels.npy | (15073,) | int64 | -1 | 2 |
-| data/processed/val_subject_ids.npy | (15073,) | object |  |  |
+| data/processed/val_subject_ids.npy | (15073,) | <U4 |  |  |
+| data/processed/X_train_balanced.npy | (59907, 64, 6) | float32 | -39.861 | 38.1595 |
+| data/processed/y_train_balanced.npy | (59907,) | int64 | 0 | 1 |
 
 `train.npy`, `val.npy`, and `test.npy` are the primary model inputs. Their matching label, subject, and recording arrays must remain aligned by row. `X_train_balanced.npy` and `y_train_balanced.npy` are additional class-balancing artifacts and should be used only when an experiment explicitly selects them.
 
@@ -2070,14 +2072,14 @@ Numeric statistics:
 
 | column | non_null | min | mean | median | std | max |
 | --- | --- | --- | --- | --- | --- | --- |
-| val_selected_threshold | 5 | 0.2 | 0.4 | 0.25 | 0.257391 | 0.75 |
-| accuracy | 5 | 0.099 | 0.8158 | 0.9943 | 0.400706 | 0.9965 |
-| precision | 5 | 0.0883 | 0.7917 | 0.9683 | 0.393235 | 0.972 |
-| recall | 5 | 0.9554 | 0.98042 | 0.99 | 0.0173361 | 0.995 |
-| f1 | 5 | 0.1621 | 0.81446 | 0.9775 | 0.364688 | 0.9802 |
-| f2 | 5 | 0.3254 | 0.85458 | 0.9876 | 0.295825 | 0.988 |
-| fa_per_hour | 5 | 14.03 | 900.846 | 16.64 | 1979.4 | 4441.7 |
-| severity_macro_f1 | 1 | 0.3794 | 0.3794 | 0.3794 |  | 0.3794 |
+| val_selected_threshold | 5 | 0.1 | 0.38 | 0.25 | 0.279732 | 0.75 |
+| accuracy | 5 | 0.9932 | 0.9947 | 0.9943 | 0.00148155 | 0.9965 |
+| precision | 5 | 0.958 | 0.96564 | 0.9683 | 0.0060144 | 0.972 |
+| recall | 5 | 0.9554 | 0.97626 | 0.9692 | 0.016954 | 0.995 |
+| f1 | 5 | 0.9635 | 0.97474 | 0.9775 | 0.00671439 | 0.9802 |
+| f2 | 5 | 0.9669 | 0.98288 | 0.9876 | 0.00908719 | 0.988 |
+| fa_per_hour | 5 | 14.03 | 16.2 | 16.64 | 2.04655 | 18.47 |
+| severity_macro_f1 | 1 | 0.866 | 0.866 | 0.866 |  | 0.866 |
 
 First 10 rows:
 
@@ -2085,7 +2087,7 @@ First 10 rows:
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | CNN (binary) | 0.2 | 0.9965 | 0.9683 | 0.9925 | 0.9802 | 0.9876 | 14.12 | UNVERIFIED | UNVERIFIED | 33729 |  | reproduced from results/cnn_baseline/run_metadata.json |
 | CNN-LSTM (binary) | 0.25 | 0.996 | 0.9606 | 0.995 | 0.9775 | 0.9879 | 17.74 | 0.9998 | 0.9987 | 46817 |  | reproduced from results/cnn_lstm_baseline/run_metadata.json |
-| CNN-LSTM + severity head | 0.2 | 0.099 | 0.0883 | 0.99 | 0.1621 | 0.3254 | 4441.7 | 0.5036 | 0.4631 | 46883 | 0.3794 | reproduced from results/severity_multitask/run_v1/run_metadata.json |
+| CNN-LSTM + severity head | 0.1 | 0.9935 | 0.958 | 0.9692 | 0.9635 | 0.9669 | 18.47 | 0.9994 | 0.9943 | 46883 | 0.866 | reproduced from results/severity_multitask/run_v2/run_metadata.json |
 | FiLM (k=1, exploratory) | 0.6 | 0.9932 | 0.972 | 0.9554 | 0.9738 | 0.984 | 16.64 | 0.9998 | 0.9985 | 46817 (+128 affine) |  | reproduced from results/film_personalization/full_run_v1/analysis/test_metric_summary.csv |
 | FiLM (k=30, exploratory) | 0.75 | 0.9943 | 0.9693 | 0.9692 | 0.9787 | 0.988 | 14.03 | 0.9998 | 0.9986 | 46817 (+128 affine) |  | reproduced from results/film_personalization/full_run_v1/analysis/test_metric_summary.csv |
 ### `results/film_personalization/full_run_v1/aggregate_summary.csv`
@@ -3873,6 +3875,39 @@ First 10 rows:
 | 7 | SA02 | SA02:D01_SA02_R01.txt | 0 | -1 | 0.375207 | 1 | 0.469157 | 0.530844 | 1 |
 | 8 | SA02 | SA02:D01_SA02_R01.txt | 0 | -1 | 0.375207 | 1 | 0.469157 | 0.530844 | 1 |
 | 9 | SA02 | SA02:D01_SA02_R01.txt | 0 | -1 | 0.375207 | 1 | 0.469157 | 0.530844 | 1 |
+### `results/severity_multitask/run_v2/test_predictions.csv`
+
+- Shape: `13,627 rows x 10 columns`
+- Missing cells: `0`
+- Columns: `window_index, subject_id, recording_id, binary_label, true_severity_label, predicted_binary_prob, predicted_binary_label, predicted_severity_mild_prob, predicted_severity_severe_prob, predicted_severity_label`
+
+Numeric statistics:
+
+| column | non_null | min | mean | median | std | max |
+| --- | --- | --- | --- | --- | --- | --- |
+| window_index | 13627 | 0 | 6813 | 6813 | 3933.92 | 13626 |
+| binary_label | 13627 | 0 | 0.0880605 | 0 | 0.283393 | 1 |
+| true_severity_label | 13627 | -1 | -0.860938 | -1 | 0.474622 | 1 |
+| predicted_binary_prob | 13627 | 6.58855e-07 | 0.072052 | 5.70825e-05 | 0.239543 | 0.999757 |
+| predicted_binary_label | 13627 | 0 | 0.0890878 | 0 | 0.284881 | 1 |
+| predicted_severity_mild_prob | 13627 | 0.0278018 | 0.712708 | 0.755476 | 0.152273 | 0.992937 |
+| predicted_severity_severe_prob | 13627 | 0.00706298 | 0.287292 | 0.244524 | 0.152273 | 0.972198 |
+| predicted_severity_label | 13627 | 0 | 0.0641374 | 0 | 0.245006 | 1 |
+
+First 10 rows:
+
+| window_index | subject_id | recording_id | binary_label | true_severity_label | predicted_binary_prob | predicted_binary_label | predicted_severity_mild_prob | predicted_severity_severe_prob | predicted_severity_label |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| 0 | SA02 | SA02:D01_SA02_R01.txt | 0 | -1 | 7.31159e-05 | 0 | 0.726427 | 0.273573 | 0 |
+| 1 | SA02 | SA02:D01_SA02_R01.txt | 0 | -1 | 3.88074e-05 | 0 | 0.714349 | 0.285651 | 0 |
+| 2 | SA02 | SA02:D01_SA02_R01.txt | 0 | -1 | 3.78281e-05 | 0 | 0.692254 | 0.307746 | 0 |
+| 3 | SA02 | SA02:D01_SA02_R01.txt | 0 | -1 | 5.2637e-05 | 0 | 0.697067 | 0.302933 | 0 |
+| 4 | SA02 | SA02:D01_SA02_R01.txt | 0 | -1 | 4.6858e-05 | 0 | 0.692289 | 0.307711 | 0 |
+| 5 | SA02 | SA02:D01_SA02_R01.txt | 0 | -1 | 4.38215e-05 | 0 | 0.69626 | 0.30374 | 0 |
+| 6 | SA02 | SA02:D01_SA02_R01.txt | 0 | -1 | 2.69797e-05 | 0 | 0.725676 | 0.274324 | 0 |
+| 7 | SA02 | SA02:D01_SA02_R01.txt | 0 | -1 | 4.83653e-05 | 0 | 0.723265 | 0.276735 | 0 |
+| 8 | SA02 | SA02:D01_SA02_R01.txt | 0 | -1 | 3.08849e-05 | 0 | 0.702915 | 0.297085 | 0 |
+| 9 | SA02 | SA02:D01_SA02_R01.txt | 0 | -1 | 2.36772e-05 | 0 | 0.716051 | 0.283948 | 0 |
 
 ## 8. How to Continue
 
