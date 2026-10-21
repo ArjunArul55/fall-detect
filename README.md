@@ -192,7 +192,7 @@ A real-time edge streaming simulator and interactive dashboard running on the de
 ```powershell
 streamlit run app/demo.py
 ```
-- **Features**: Real-time sliding ring buffer (64 samples @ 20 Hz, stride 16), rolling 6-channel IMU charts, probability timeline vs. validation-selected threshold ($\tau = 0.10$), visual status badge (`MONITORING` / `FALL DETECTED`), configurable $N$-consecutive positives (1–3), cooldown refractory period (10 s), caregiver notification dispatch log, and custom 6-channel CSV upload.
+- **Features**: Real-time sliding ring buffer (64 samples @ 20 Hz, stride 16), rolling 6-channel IMU charts, probability timeline vs. validation-selected threshold ($\tau = 0.25$), visual status badge (`MONITORING` / `FALL DETECTED`), configurable $N$-consecutive positives (1–3), cooldown refractory period (10 s), caregiver notification dispatch log, and custom 6-channel CSV upload.
 - **Walkthrough Guide**: See [docs/DEMO_SCRIPT.md](docs/DEMO_SCRIPT.md) for a 5-minute presentation script covering 6 test recordings (walking, sitting, stumble, jump, mild fall, severe fall).
 
 ### 2. Command-Line Replay

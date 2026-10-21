@@ -14,7 +14,7 @@ This document outlines a **5-minute live demonstration script** showcasing real-
   - Deployed model size: $111.04\text{ KB}$ (Dynamic-range quantized CNN-LSTM).
   - CPU inference latency: $\approx 0.025\text{ ms}$ per window.
 - **Alert Policy**:
-  - Validation-selected threshold: $\tau = 0.10$ (selected to optimize validation $F_2$, balancing high recall with low false alarm rate).
+  - Validation-selected threshold: $\tau = 0.25$ (selected to optimize validation $F_2$, balancing high recall with low false alarm rate).
   - Consecutive positive requirement: $N=1$ (default; configurable to 2 or 3 for enhanced noise rejection).
   - Alert cooldown: $10.0\text{ s}$ refractory period preventing duplicate alerts during a single fall event.
 - **Severity Classification**:
@@ -47,7 +47,7 @@ All demo recordings are extracted from the **unseen SisFall test set** (Subject 
 | **1** | `SA02_D01_Walking.csv` | SA02 | `D01` | Walking | ADL (Baseline) | Monitoring, 0 alerts | `0.0001` | 0 Alerts (Clean pass) |
 | **2** | `SA02_D07_Sitting.csv` | SA02 | `D07` | Standing to sitting | ADL (Transition) | Monitoring, 0 alerts | `0.0002` | 0 Alerts (Clean pass) |
 | **3** | `SA02_D12_Stumble.csv` | SA02 | `D12` | Stumbling / tripping | Hard-Negative ADL | Monitoring, 0 alerts | `0.0001` | 0 Alerts (Clean pass) |
-| **4** | `SA02_D15_Jump.csv` | SA02 | `D15` | Vertical jumping | Hard-Negative ADL | Elevated prob, no alert | `0.0435` | 0 Alerts (Below $\tau=0.10$) |
+| **4** | `SA02_D15_Jump.csv` | SA02 | `D15` | Vertical jumping | Hard-Negative ADL | Elevated prob, no alert | `0.0435` | 0 Alerts (Below $\tau=0.25$) |
 | **5** | `SA02_F01_MildFall.csv` | SA02 | `F01` | Fall forward on knees | Fall (Mild) | Alert at impact ($t \approx 7.2\text{s}$) | `0.9999` | 1 Alert fired ($t = 7.15\text{s}$) |
 | **6** | `SA02_F03_SevereFall.csv` | SA02 | `F03` | Fall backward on buttocks | Fall (Severe) | Alert at impact ($t \approx 7.0\text{s}$) | `0.9292` | 1 Alert fired ($t = 7.15\text{s}$) |
 
@@ -62,7 +62,7 @@ All demo recordings are extracted from the **unseen SisFall test set** (Subject 
    > *"Notice the continuous 3-axis accelerometer and gyroscope waveforms. During standard walking, acceleration oscillates rhythmically within $[-1.5g, +0.5g]$. The model evaluates every 16 samples ($0.8\text{ s}$). Fall probability stays below $0.0002$. The status remains MONITORING with zero false alarms."*
 4. Select **`SA02_D07_Sitting (ADL)`** and click replay.
 5. **Presenter Commentary**:
-   > *"Transitions like sitting down involve vertical acceleration dips. Here the maximum fall probability reaches only $0.0002$, well below the operating threshold of $\tau = 0.10$."*
+   > *"Transitions like sitting down involve vertical acceleration dips. Here the maximum fall probability reaches only $0.0002$, well below the operating threshold of $\tau = 0.25$."*
 
 ### Minute 2: Challenging Dynamic Hard Negatives (Jump & Stumble)
 1. Select **`SA02_D12_Stumble (Hard-Negative ADL)`** and run replay.
@@ -70,7 +70,7 @@ All demo recordings are extracted from the **unseen SisFall test set** (Subject 
    > *"Tripping or stumbling involves sharp inertial spikes. A naive threshold on peak acceleration might trigger a false alarm, but the temporal LSTM dynamics correctly recognize recovery. Probability stays negligible at $0.0001$."*
 3. Select **`SA02_D15_Jump (Hard-Negative ADL)`** and run replay.
 4. **Presenter Commentary**:
-   > *"Vertical jumping causes substantial impact shock upon landing ($> 2.5g$). Notice the probability timeline spikes up to $0.0435$ around the landing phase. However, because our validation-selected threshold is $\tau = 0.10$, the system successfully suppresses the false alarm."*
+   > *"Vertical jumping causes substantial impact shock upon landing ($> 2.5g$). Notice the probability timeline spikes up to $0.0435$ around the landing phase. However, because our validation-selected threshold is $\tau = 0.25$, the system successfully suppresses the false alarm."*
 
 ### Minute 3: Real Fall Event (Mild Fall Detection)
 1. Select **`SA02_F01_MildFall (Fall)`** and set speed to **1x** or **5x**.

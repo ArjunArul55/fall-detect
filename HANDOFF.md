@@ -59,7 +59,7 @@ This document provides a technical handoff for the **AI-Based Wearable Fall Dete
 | :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :--- |
 | **CNN (binary)** | 0.20 | 0.9965 | 0.9683 | 0.9925 | 0.9802 | 0.9876 | 14.12 | *UNVERIFIED* | *UNVERIFIED* | 33,729 | N/A | `results/cnn_baseline/run_metadata.json` |
 | **CNN-LSTM (binary)** | 0.25 | 0.9960 | 0.9606 | 0.9950 | 0.9775 | 0.9879 | 17.74 | 0.9998 | 0.9987 | 46,817 | N/A | `results/cnn_lstm_baseline/run_metadata.json` |
-| **CNN-LSTM + severity head** | 0.20 | 0.0990 | 0.0883 | 0.9900 | 0.1621 | 0.3254 | 4441.70 | 0.5036 | 0.4631 | 46,883 | 0.3794 | `results/severity_multitask/run_v1/run_metadata.json` |
+| **CNN-LSTM + severity head** | 0.10 | 0.9935 | 0.9580 | 0.9692 | 0.9635 | 0.9669 | 18.47 | 0.9994 | 0.9943 | 46,883 | 0.8660 | `results/severity_multitask/run_v2/run_metadata.json` |
 | **FiLM (k=1, exploratory)** | 0.60 | 0.9932 | 0.9720 | 0.9554 | 0.9738 | 0.9840 | 16.64 | 0.9998 | 0.9985 | 46,945 | N/A | `results/film_personalization/full_run_v1` |
 | **FiLM (k=30, exploratory)** | 0.75 | 0.9943 | 0.9693 | 0.9692 | 0.9787 | 0.9880 | 14.03 | 0.9998 | 0.9986 | 46,945 | N/A | `results/film_personalization/full_run_v1` |
 
@@ -69,10 +69,10 @@ This document provides a technical handoff for the **AI-Based Wearable Fall Dete
 
 | Variant | Size (KB) | Compression vs Float32 | Val Threshold | Agreement w/ Float (%) | Max Abs Diff | Mean Abs Diff | Recall | F1 | F2 | FA/hr | AUROC | Latency Median | Gate Pass? |
 | :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
-| **float32** | 235.6 | 1.00x | 0.10 | 100.00% | 0.00000 | 0.00000 | 0.4733 | 0.6315 | 0.5260 | 11.23 | 0.8695 | 0.06 ms | PASS |
-| **dynamic_range** | **111.0** | **2.12x** | **0.10** | **99.97%** | **0.03372** | **0.00010** | **0.4700** | **0.6284** | **0.5227** | **11.23** | **0.8695** | **0.03 ms** | **DEPLOYED** |
-| **float16** | 147.8 | 1.59x | 0.10 | 99.99% | 0.00250 | 0.00001 | 0.4742 | 0.6322 | 0.5269 | 11.23 | 0.8695 | 0.06 ms | PASS |
-| **int8** | 136.9 | 1.72x | 0.10 | 99.93% | 0.19042 | 0.00081 | 0.4783 | 0.6357 | 0.5309 | 11.59 | 0.8132 | 0.03 ms | PASS |
+| **float32** | 235.6 | 1.00x | 0.25 | 100.00% | 0.00000 | 0.00000 | 0.9950 | 0.9775 | 0.9879 | 17.74 | 0.9999 | 0.06 ms | PASS |
+| **dynamic_range** | **111.0** | **2.12x** | **0.25** | **100.00%** | **0.01376** | **0.00003** | **0.9950** | **0.9775** | **0.9879** | **17.74** | **0.9999** | **0.03 ms** | **DEPLOYED** |
+| **float16** | 147.8 | 1.59x | 0.25 | 100.00% | 0.00075 | 0.00000 | 0.9950 | 0.9775 | 0.9879 | 17.74 | 0.9999 | 0.06 ms | PASS |
+| **int8** | 136.9 | 1.72x | 0.30 | 99.97% | 0.22594 | 0.00089 | 0.9950 | 0.9775 | 0.9879 | 17.74 | 0.9998 | 0.03 ms | PASS |
 
 > *Gating Decision*: `dynamic_range` was selected as the smallest variant satisfying $F_2$ drop $\le 0.005$ and recall drop $\le 0.010$ vs Keras float on test.
 
@@ -104,13 +104,17 @@ fall-detection-main/
 │   ├── comparison/
 │   │   ├── model_comparison.csv                      # Primary comparison CSV
 │   │   └── model_comparison.md                       # Primary comparison Markdown
-│   └── quantization/run_v1/
-│       ├── deployed_model.tflite                     # Deployed quantized edge model (111 KB)
-│       ├── deployed_model_meta.json                  # Edge metadata (window=64, stride=16, threshold=0.10)
-│       ├── model_data.h                              # C byte array header for microcontroller
-│       └── quantization_report.md                    # Quantization benchmark and gating report
+│   ├── quantization/run_v1/
+│   │   ├── deployed_model.tflite                     # Deployed quantized edge model (111 KB)
+│   │   ├── deployed_model_meta.json                  # Edge metadata (window=64, stride=16, threshold=0.25)
+│   │   ├── model_data.h                              # C byte array header for microcontroller
+│   │   └── quantization_report.md                    # Quantization benchmark and gating report
+│   └── severity_multitask/run_v2/
+│       ├── multitask_best.keras                      # Multi-task model weights
+│       ├── run_metadata.json                         # Multi-task evaluation metadata
+│       └── test_predictions.csv                     # Test predictions with severity
 ├── scripts/
-│   ├── quantize_tflite.py                            # TFLite conversion & evaluation pipeline
+│   ├── run_quantization_pipeline.py                  # TFLite conversion & evaluation pipeline
 │   ├── run_demo_cli.py                               # Replay continuous IMU recordings via CLI
 │   └── train_severity_multitask.py                   # Multi-task severity head training pipeline
 ├── src/
@@ -172,6 +176,10 @@ To run this repository on a fresh environment:
 ## 7. Git Commit Log (`git log --oneline -15`)
 
 ```text
+b0f824b feat(p5): run quantization pipeline with authentic SisFall dataset and deploy dynamic_range model
+8d31463 docs(p4): regenerate project report and project status report from canonical artifacts
+fae9b40 feat(p2-p3): train multitask severity run_v2 with optimized tf.function and update model comparison
+9b7cda3 docs(p7): update handoff document with real-data multi-task verification and refreshed git history
 a66386c docs(p4): regenerate project report and status report with verified real-data multi-task run
 995483c feat(p3): update comparison table and baseline severity eval with verified real-data metrics
 4a9b64b feat(p2): complete real data training of multi-task severity head and evaluate on test set
