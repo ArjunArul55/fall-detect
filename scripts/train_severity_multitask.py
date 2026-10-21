@@ -659,10 +659,11 @@ def generate_summary_markdown(meta: dict[str, Any]) -> str:
     s_base = m["severity_context_baselines"]
     unc = m["uncertain_minus1_binary_recall"]
 
+    output_dirname = meta.get("output_dir_name", "run_v2")
     lines = [
         "# Multi-Task Severity Head Run Summary (Task P2)",
         "",
-        f"- **Run Directory**: `results/severity_multitask/run_v1`",
+        f"- **Run Directory**: `results/severity_multitask/{output_dirname}`",
         f"- **Generated (UTC)**: {meta['timestamp_utc']}",
         f"- **Best Lambda**: {meta['best_selection']['lambda']} (Epoch {meta['best_selection']['epoch']})",
         f"- **Validation-Selected Binary Threshold**: {meta['chosen_threshold']:.2f} (0.50 reference)",
