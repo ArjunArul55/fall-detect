@@ -1,7 +1,7 @@
 # Fall Detection System — End-to-End Project Report
 
-- **Generated**: 2026-10-20 16:38 UTC
-- **Git Commit**: `49846fb`
+- **Generated**: 2026-10-21 12:24 UTC
+- **Git Commit**: `995483c`
 - **Canonical Severity Run**: `k2_20260914T055946Z`
 - **Locked Decision Rules**:
   - **D1**: Canonical severity scheme is strictly K=2 (`k2_20260914T055946Z`: 0=Mild, 1=Severe, -1=Uncertain).
@@ -163,12 +163,3 @@ Evaluation of binary CNN-LSTM detector across severity classes at validation-sel
 | **Pytest Test Suite** | `tests/` | **VERIFIED** | All tests green |
 | **CNN Test AUROC/AUPRC** | `results/cnn_baseline/run_metadata.json` | **UNVERIFIED** | Raw test probability vectors not saved |
 | **Multi-Task Test Weights** | `results/severity_multitask/` | **UNVERIFIED** | Pipeline implemented; training pending `.npy` |
-
-## Missing or Failed Artifacts
-
-- train windows: D:\study_material\aav\fall-detection-main\data\processed\train.npy
-- train labels: D:\study_material\aav\fall-detection-main\data\processed\train_labels.npy
-- val windows: D:\study_material\aav\fall-detection-main\data\processed\val.npy
-- val labels: D:\study_material\aav\fall-detection-main\data\processed\val_labels.npy
-- test windows: D:\study_material\aav\fall-detection-main\data\processed\test.npy
-- test labels: D:\study_material\aav\fall-detection-main\data\processed\test_labels.npy
