@@ -1,0 +1,7 @@
+threshold_role,threshold,severity_label,severity,recordings,detected_recordings,impact_verified_recordings,two_consecutive_recordings
+validation_selected,0.25,-1,Uncertain (-1),13,3,3,0
+validation_selected,0.25,0,Mild,126,13,13,1
+validation_selected,0.25,1,Severe,186,27,27,1
+reference_0.50,0.5,-1,Uncertain (-1),13,2,2,0
+reference_0.50,0.5,0,Mild,126,12,12,1
+reference_0.50,0.5,1,Severe,186,25,25,1
