@@ -1,0 +1,282 @@
+{
+  "threshold_role": "validation_selected",
+  "threshold": 0.25,
+  "severity_dir": "D:\\study_material\\aav\\fall-detection-main\\data\\processed\\severity\\runs\\k2_20260914T055946Z",
+  "window_metrics": [
+    {
+      "threshold_role": "validation_selected",
+      "threshold": 0.25,
+      "severity_label": -1,
+      "severity": "Uncertain (-1)",
+      "windows": 24,
+      "detected_windows": 3,
+      "window_recall": 0.125,
+      "window_precision": 0.0054446460980036296,
+      "window_f1": 0.010434782608695651
+    },
+    {
+      "threshold_role": "validation_selected",
+      "threshold": 0.25,
+      "severity_label": 0,
+      "severity": "Mild",
+      "windows": 457,
+      "detected_windows": 15,
+      "window_recall": 0.03282275711159737,
+      "window_precision": 0.02722323049001815,
+      "window_f1": 0.02976190476190476
+    },
+    {
+      "threshold_role": "validation_selected",
+      "threshold": 0.25,
+      "severity_label": 1,
+      "severity": "Severe",
+      "windows": 719,
+      "detected_windows": 28,
+      "window_recall": 0.03894297635605007,
+      "window_precision": 0.050816696914700546,
+      "window_f1": 0.04409448818897638
+    }
+  ],
+  "recording_metrics_by_severity": [
+    {
+      "threshold_role": "validation_selected",
+      "threshold": 0.25,
+      "severity_label": -1,
+      "severity": "Uncertain (-1)",
+      "recordings": 13,
+      "detected_recordings": 3,
+      "impact_verified_recordings": 3,
+      "two_consecutive_recordings": 0
+    },
+    {
+      "threshold_role": "validation_selected",
+      "threshold": 0.25,
+      "severity_label": 0,
+      "severity": "Mild",
+      "recordings": 126,
+      "detected_recordings": 13,
+      "impact_verified_recordings": 13,
+      "two_consecutive_recordings": 1
+    },
+    {
+      "threshold_role": "validation_selected",
+      "threshold": 0.25,
+      "severity_label": 1,
+      "severity": "Severe",
+      "recordings": 186,
+      "detected_recordings": 27,
+      "impact_verified_recordings": 27,
+      "two_consecutive_recordings": 1
+    }
+  ],
+  "subject_metrics_by_severity": [
+    {
+      "threshold_role": "validation_selected",
+      "threshold": 0.25,
+      "severity_label": -1,
+      "severity": "Uncertain (-1)",
+      "subjects": 4,
+      "mean_subject_recall": 0.11666666666666665,
+      "min_subject_recall": 0.0,
+      "impact_verified_subjects": 2
+    },
+    {
+      "threshold_role": "validation_selected",
+      "threshold": 0.25,
+      "severity_label": 0,
+      "severity": "Mild",
+      "subjects": 4,
+      "mean_subject_recall": 0.032553239370622475,
+      "min_subject_recall": 0.020833333333333332,
+      "impact_verified_subjects": 4
+    },
+    {
+      "threshold_role": "validation_selected",
+      "threshold": 0.25,
+      "severity_label": 1,
+      "severity": "Severe",
+      "subjects": 4,
+      "mean_subject_recall": 0.038708103704860136,
+      "min_subject_recall": 0.03409090909090909,
+      "impact_verified_subjects": 4
+    }
+  ],
+  "overall_metrics": {
+    "window": {
+      "tp": 46,
+      "fp": 505,
+      "fn": 1154,
+      "tn": 11922,
+      "precision": 0.08348457350272233,
+      "recall": 0.03833333333333333,
+      "f1": 0.05254140491147915
+    },
+    "recording": {
+      "fall_recordings": 300,
+      "detected_fall_recordings": 120,
+      "recording_recall": 0.4,
+      "adl_recordings": 434,
+      "adl_false_trigger_recordings": 226,
+      "adl_false_trigger_rate": 0.5207373271889401
+    },
+    "subject_count": 6,
+    "impact_verified_recordings": 120
+  },
+  "future_two_consecutive_window_policy": {
+    "status": "analysis_only; default predictions unchanged",
+    "rule": "alert only when two adjacent windows are predicted positive within one recording",
+    "recording": {
+      "fall_recordings": 300,
+      "detected_fall_recordings": 5,
+      "recording_recall": 0.016666666666666666,
+      "adl_recordings": 434,
+      "adl_false_trigger_recordings": 9,
+      "adl_false_trigger_rate": 0.020737327188940093
+    }
+  },
+  "generated_at_utc": "2026-10-21T12:22:31.634620+00:00",
+  "command": "scripts/evaluate_cnn_lstm_by_severity.py --severity-dir data/processed/severity/runs/k2_20260914T055946Z",
+  "threshold_policy": {
+    "headline": "validation-selected max-F2 threshold, applied unchanged to test",
+    "reference_threshold": 0.5
+  },
+  "reference_threshold_results": {
+    "threshold_role": "reference_0.50",
+    "threshold": 0.5,
+    "severity_dir": "D:\\study_material\\aav\\fall-detection-main\\data\\processed\\severity\\runs\\k2_20260914T055946Z",
+    "window_metrics": [
+      {
+        "threshold_role": "reference_0.50",
+        "threshold": 0.5,
+        "severity_label": -1,
+        "severity": "Uncertain (-1)",
+        "windows": 24,
+        "detected_windows": 2,
+        "window_recall": 0.08333333333333333,
+        "window_precision": 0.00390625,
+        "window_f1": 0.007462686567164179
+      },
+      {
+        "threshold_role": "reference_0.50",
+        "threshold": 0.5,
+        "severity_label": 0,
+        "severity": "Mild",
+        "windows": 457,
+        "detected_windows": 14,
+        "window_recall": 0.030634573304157548,
+        "window_precision": 0.02734375,
+        "window_f1": 0.02889576883384933
+      },
+      {
+        "threshold_role": "reference_0.50",
+        "threshold": 0.5,
+        "severity_label": 1,
+        "severity": "Severe",
+        "windows": 719,
+        "detected_windows": 26,
+        "window_recall": 0.03616133518776078,
+        "window_precision": 0.05078125,
+        "window_f1": 0.04224207961007311
+      }
+    ],
+    "recording_metrics_by_severity": [
+      {
+        "threshold_role": "reference_0.50",
+        "threshold": 0.5,
+        "severity_label": -1,
+        "severity": "Uncertain (-1)",
+        "recordings": 13,
+        "detected_recordings": 2,
+        "impact_verified_recordings": 2,
+        "two_consecutive_recordings": 0
+      },
+      {
+        "threshold_role": "reference_0.50",
+        "threshold": 0.5,
+        "severity_label": 0,
+        "severity": "Mild",
+        "recordings": 126,
+        "detected_recordings": 12,
+        "impact_verified_recordings": 12,
+        "two_consecutive_recordings": 1
+      },
+      {
+        "threshold_role": "reference_0.50",
+        "threshold": 0.5,
+        "severity_label": 1,
+        "severity": "Severe",
+        "recordings": 186,
+        "detected_recordings": 25,
+        "impact_verified_recordings": 25,
+        "two_consecutive_recordings": 1
+      }
+    ],
+    "subject_metrics_by_severity": [
+      {
+        "threshold_role": "reference_0.50",
+        "threshold": 0.5,
+        "severity_label": -1,
+        "severity": "Uncertain (-1)",
+        "subjects": 4,
+        "mean_subject_recall": 0.03333333333333333,
+        "min_subject_recall": 0.0,
+        "impact_verified_subjects": 1
+      },
+      {
+        "threshold_role": "reference_0.50",
+        "threshold": 0.5,
+        "severity_label": 0,
+        "severity": "Mild",
+        "subjects": 4,
+        "mean_subject_recall": 0.03053711033836441,
+        "min_subject_recall": 0.020833333333333332,
+        "impact_verified_subjects": 4
+      },
+      {
+        "threshold_role": "reference_0.50",
+        "threshold": 0.5,
+        "severity_label": 1,
+        "severity": "Severe",
+        "subjects": 4,
+        "mean_subject_recall": 0.035985032669504376,
+        "min_subject_recall": 0.029585798816568046,
+        "impact_verified_subjects": 4
+      }
+    ],
+    "overall_metrics": {
+      "window": {
+        "tp": 42,
+        "fp": 470,
+        "fn": 1158,
+        "tn": 11957,
+        "precision": 0.08203125,
+        "recall": 0.035,
+        "f1": 0.04906542056074767
+      },
+      "recording": {
+        "fall_recordings": 300,
+        "detected_fall_recordings": 114,
+        "recording_recall": 0.38,
+        "adl_recordings": 434,
+        "adl_false_trigger_recordings": 211,
+        "adl_false_trigger_rate": 0.4861751152073733
+      },
+      "subject_count": 6,
+      "impact_verified_recordings": 114
+    },
+    "future_two_consecutive_window_policy": {
+      "status": "analysis_only; default predictions unchanged",
+      "rule": "alert only when two adjacent windows are predicted positive within one recording",
+      "recording": {
+        "fall_recordings": 300,
+        "detected_fall_recordings": 5,
+        "recording_recall": 0.016666666666666666,
+        "adl_recordings": 434,
+        "adl_false_trigger_recordings": 8,
+        "adl_false_trigger_rate": 0.018433179723502304
+      }
+    },
+    "generated_at_utc": "2026-10-21T12:22:32.812263+00:00",
+    "command": "scripts/evaluate_cnn_lstm_by_severity.py --severity-dir data/processed/severity/runs/k2_20260914T055946Z"
+  }
+}

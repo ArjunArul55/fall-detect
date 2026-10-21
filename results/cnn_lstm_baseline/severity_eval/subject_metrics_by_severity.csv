@@ -1,0 +1,25 @@
+threshold_role,threshold,severity_label,severity,subject_id,severity_windows,detected_severity_windows,subject_recall,impact_verified
+validation_selected,0.25,-1,Uncertain (-1),SA02,15,2,0.13333333333333333,True
+validation_selected,0.25,-1,Uncertain (-1),SA03,3,1,0.3333333333333333,True
+validation_selected,0.25,-1,Uncertain (-1),SA09,3,0,0.0,False
+validation_selected,0.25,-1,Uncertain (-1),SA14,3,0,0.0,False
+validation_selected,0.25,0,Mild,SA02,109,5,0.045871559633027525,True
+validation_selected,0.25,0,Mild,SA03,128,4,0.03125,True
+validation_selected,0.25,0,Mild,SA09,124,4,0.03225806451612903,True
+validation_selected,0.25,0,Mild,SA14,96,2,0.020833333333333332,True
+validation_selected,0.25,1,Severe,SA02,176,6,0.03409090909090909,True
+validation_selected,0.25,1,Severe,SA03,169,6,0.03550295857988166,True
+validation_selected,0.25,1,Severe,SA09,173,7,0.04046242774566474,True
+validation_selected,0.25,1,Severe,SA14,201,9,0.04477611940298507,True
+reference_0.50,0.5,-1,Uncertain (-1),SA02,15,2,0.13333333333333333,True
+reference_0.50,0.5,-1,Uncertain (-1),SA03,3,0,0.0,False
+reference_0.50,0.5,-1,Uncertain (-1),SA09,3,0,0.0,False
+reference_0.50,0.5,-1,Uncertain (-1),SA14,3,0,0.0,False
+reference_0.50,0.5,0,Mild,SA02,109,5,0.045871559633027525,True
+reference_0.50,0.5,0,Mild,SA03,128,4,0.03125,True
+reference_0.50,0.5,0,Mild,SA09,124,3,0.024193548387096774,True
+reference_0.50,0.5,0,Mild,SA14,96,2,0.020833333333333332,True
+reference_0.50,0.5,1,Severe,SA02,176,6,0.03409090909090909,True
+reference_0.50,0.5,1,Severe,SA03,169,5,0.029585798816568046,True
+reference_0.50,0.5,1,Severe,SA09,173,7,0.04046242774566474,True
+reference_0.50,0.5,1,Severe,SA14,201,8,0.03980099502487562,True
