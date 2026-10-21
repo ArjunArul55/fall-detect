@@ -1,6 +1,7 @@
 {
   "variant": "dynamic_range",
-  "threshold": 0.1,
+  "threshold": 0.25,
+  "operating_threshold": 0.25,
   "input_scale": 0.0,
   "input_zero_point": 0,
   "output_scale": 0.0,
@@ -15,19 +16,19 @@
   "size_bytes": 113704,
   "size_kb": 111.0390625,
   "metrics": {
-    "accuracy": 0.9510530564320834,
-    "precision": 0.9478991596638655,
-    "recall": 0.47,
-    "f1": 0.6284122562674095,
-    "f2": 0.5227062094531975,
-    "fa_per_hour": 11.225557254365494,
-    "auroc": 0.8694626619457632,
-    "agreement_pct": 99.97064651060394,
-    "max_abs_diff": 0.033720970153808594,
-    "mean_abs_diff": 9.81215198407881e-05,
-    "latency_median_ms": 0.025400000595254824,
-    "latency_p95_ms": 0.034404999996695544
+    "accuracy": 0.9959638952080428,
+    "precision": 0.9605792437650845,
+    "recall": 0.995,
+    "f1": 0.9774866966844045,
+    "f2": 0.9879199073307959,
+    "fa_per_hour": 17.743622756900297,
+    "auroc": 0.9998742657117566,
+    "agreement_pct": 100.0,
+    "max_abs_diff": 0.013755351305007935,
+    "mean_abs_diff": 3.3387386793037876e-05,
+    "latency_median_ms": 0.026399997295811772,
+    "latency_p95_ms": 0.03920500676031224
   },
-  "git_commit": "f4112df",
-  "generated_at_utc": "2026-10-20T16:50:46.280700+00:00"
+  "git_commit": "8d31463",
+  "generated_at_utc": "2026-10-21T12:49:19.899675+00:00"
 }

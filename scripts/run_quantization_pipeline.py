@@ -421,8 +421,8 @@ def write_quantization_report(
         "  - Decision stride: 16 samples (0.8 second step)",
         "  - Scaler: `data/processed/scaler.pkl`",
         f"  - Operating threshold: `{gate_decision['threshold']:.2f}`",
-        f"  - Input scale: `{gate_decision.get('input_scale', 1.0)}`, zero-point: `{gate_decision.get('input_zero_point', 0)}`",
-        f"  - Output scale: `{gate_decision.get('output_scale', 1.0)}`, zero-point: `{gate_decision.get('output_zero_point', 0)}`",
+        f"  - Input scale: `{gate_decision.get('in_scale', gate_decision.get('input_scale', 1.0))}`, zero-point: `{gate_decision.get('in_zp', gate_decision.get('input_zero_point', 0))}`",
+        f"  - Output scale: `{gate_decision.get('out_scale', gate_decision.get('output_scale', 1.0))}`, zero-point: `{gate_decision.get('out_zp', gate_decision.get('output_zero_point', 0))}`",
         "",
     ])
 
@@ -624,6 +624,7 @@ def main() -> None:
     meta = {
         "variant": winning["variant"],
         "threshold": float(winning["threshold"]),
+        "operating_threshold": float(winning["threshold"]),
         "input_scale": winning["in_scale"],
         "input_zero_point": winning["in_zp"],
         "output_scale": winning["out_scale"],
