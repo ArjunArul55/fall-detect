@@ -41,6 +41,7 @@ data/raw/SisFall_dataset/
 # Generated processed arrays and model artifacts (regenerate via scripts)
 data/processed/*.npy
 data/processed/*.pkl
+!data/processed/scaler.pkl
 
 # Local logs (reports and plots are kept for documentation)
 data/processed/*.log
