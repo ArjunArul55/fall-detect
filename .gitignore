@@ -47,5 +47,6 @@ data/processed/*.pkl
 data/processed/*.log
 data/processed/reports/*.log
 
-# Archives
+# Archives and artifact staging directories
 *.zip
+fall_detection_project_artifacts/
