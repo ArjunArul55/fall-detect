@@ -1,12 +1,12 @@
 """
-Package comprehensive project artifacts into a ZIP file.
-Includes:
-- All processed datasets from data/processed/ (as shown in Windows Explorer screenshot)
-- All trained models (Keras models: multitask_best, cnn_lstm_best, cnn_baseline)
-- All quantized edge models (TFLite: dynamic_range, float16, float32, int8)
-- Microcontroller deployment C header (model_data.h)
-- Preprocessing & severity scalers
-- Model evaluation summaries, metadata, and Review 3 presentation files
+Package project artifacts into clean, self-contained ZIP archives:
+1. fall_detection_project_artifacts.zip:
+   - data_processed/: all processed dataset arrays, labels, scalers, severity & deprecated_severity folders
+   - models/: all Keras models, TFLite quantized edge models, microcontroller C headers
+   - presentation/: formal Review 3 PPTX and PDF slide decks
+   - reports/: model comparison tables and quantization reports
+2. data_processed.zip:
+   - Standalone archive containing only the data/processed directory files and subfolders
 """
 
 import os
@@ -14,45 +14,31 @@ import sys
 import zipfile
 from pathlib import Path
 
-def create_complete_artifacts_zip():
+def package_artifacts():
     repo_root = Path(__file__).resolve().parent.parent
-    zip_path = repo_root / "fall_detection_project_artifacts.zip"
+    proc_dir = repo_root / "data" / "processed"
+    
+    # Target archives
+    combined_zip_path = repo_root / "fall_detection_project_artifacts.zip"
+    data_only_zip_path = repo_root / "data_processed.zip"
 
-    print("=" * 60)
-    print("Packaging Fall Detection Project Artifacts...")
-    print(f"Output ZIP: {zip_path}")
-    print("=" * 60)
+    print("=" * 65)
+    print("PACKAGING FALL DETECTION ARTIFACTS")
+    print("=" * 65)
 
-    # Specific list of processed data files matching the user's screenshot
-    processed_files = [
-        "data/processed/X_train_balanced.npy",
-        "data/processed/y_train_balanced.npy",
-        "data/processed/train.npy",
-        "data/processed/train_labels.npy",
-        "data/processed/train_recording_ids.npy",
-        "data/processed/train_subject_ids.npy",
-        "data/processed/train_activity_labels.npy",
-        "data/processed/train_severity_labels.npy",
-        "data/processed/val.npy",
-        "data/processed/val_labels.npy",
-        "data/processed/val_recording_ids.npy",
-        "data/processed/val_subject_ids.npy",
-        "data/processed/val_activity_labels.npy",
-        "data/processed/val_severity_labels.npy",
-        "data/processed/scaler.pkl",
-        "data/processed/test.npy",
-        "data/processed/test_labels.npy",
-        "data/processed/test_recording_ids.npy",
-        "data/processed/test_subject_ids.npy",
-        "data/processed/test_activity_labels.npy",
-        "data/processed/test_severity_labels.npy",
-        "data/processed/channel_statistics.csv",
-        "data/processed/class_imbalance_report.json",
-        "data/processed/filter_plot.png",
-        "data/processed/GYRO_OUTLIER_BY_ACTIVITY.md",
-    ]
+    # 1. Collect all files in data/processed (excluding large generative cache if desired, but including all screenshot items)
+    data_files = []
+    for item in proc_dir.rglob("*"):
+        if item.is_file():
+            # Exclude train_generative.npy if desired, or keep screenshot items
+            if "generative" in item.name.lower():
+                continue
+            rel = item.relative_to(proc_dir)
+            data_files.append((item, rel))
 
-    # Model files across the project
+    print(f"Collected {len(data_files)} files from data/processed/")
+
+    # 2. Collect model files
     model_files = [
         # Production Multi-Task Model
         ("results/severity_multitask/run_v2/multitask_best.keras", "models/keras/multitask_best.keras"),
@@ -64,7 +50,7 @@ def create_complete_artifacts_zip():
         ("results/cnn_lstm_baseline/run_metadata.json", "models/keras/cnn_lstm_metadata.json"),
         ("results/cnn_baseline/cnn_baseline_best.keras", "models/keras/cnn_baseline_best.keras"),
         
-        # Edge Quantized Models
+        # Quantized TFLite Edge Models
         ("results/quantization/run_v1/deployed_model.tflite", "models/quantized_tflite/deployed_model.tflite"),
         ("results/quantization/run_v1/model_dynamic_range.tflite", "models/quantized_tflite/model_dynamic_range.tflite"),
         ("results/quantization/run_v1/model_float16.tflite", "models/quantized_tflite/model_float16.tflite"),
@@ -76,79 +62,84 @@ def create_complete_artifacts_zip():
         # Microcontroller C Header
         ("results/quantization/run_v1/model_data.h", "models/microcontroller_esp32/model_data.h"),
         
-        # Model Comparison Table
+        # Comparison reports
         ("results/comparison/model_comparison.csv", "reports/model_comparison.csv"),
         ("results/comparison/model_comparison.md", "reports/model_comparison.md"),
         
-        # Review 3 Presentation Deck & Figures
+        # Review 3 Presentation
         ("docs/presentation/Review_3_Presentation.pdf", "presentation/Review_3_Presentation.pdf"),
         ("docs/presentation/Review_3_Presentation.pptx", "presentation/Review_3_Presentation.pptx"),
     ]
 
-    with zipfile.ZipFile(zip_path, "w", compression=zipfile.ZIP_DEFLATED, compresslevel=6) as zf:
-        # 1. Add processed dataset files
-        print("\n[1/3] Adding data/processed files...")
-        for rel_path in processed_files:
-            file_path = repo_root / rel_path
-            if file_path.exists():
-                arcname = rel_path
-                zf.write(file_path, arcname=arcname)
-                size_kb = file_path.stat().st_size / 1024
-                print(f"  + {arcname} ({size_kb:,.1f} KB)")
-            else:
-                print(f"  ! Missing: {rel_path}")
+    manifest_text = """FALL DETECTION PROJECT - ARTIFACT ARCHIVE
+=========================================
+Madras Institute of Technology, Anna University
+Course: IT5712 Project 1 (Academic Year 2023-2027)
 
-        # Add data/processed/severity subfolder
-        severity_dir = repo_root / "data/processed/severity"
-        if severity_dir.exists():
-            for f in severity_dir.rglob("*"):
-                if f.is_file():
-                    arcname = str(f.relative_to(repo_root)).replace("\\", "/")
-                    zf.write(f, arcname=arcname)
-                    print(f"  + {arcname}")
+FOLDER STRUCTURE:
+-----------------
+1. data_processed/
+   - Preprocessed SisFall dataset arrays: train.npy, val.npy, test.npy
+   - Balanced datasets: X_train_balanced.npy, y_train_balanced.npy
+   - Label mappings: labels, recording IDs, subject IDs, activity labels, severity labels
+   - Normalization scaler: scaler.pkl (StandardScaler fitted on training windows)
+   - severity/: K-Means clustering model (kmeans_model.pkl), severity scaler, PCA plots
+   - deprecated_severity/: Initial severity run artifacts and diagnostics
 
-        # 2. Add all model files
-        print("\n[2/3] Adding model files & deployment assets...")
+2. models/
+   - keras/:
+       * multitask_best.keras (Production CNN-LSTM dual-head binary fall + severity model)
+       * cnn_lstm_best.keras (Baseline binary CNN-LSTM detector)
+       * cnn_baseline_best.keras (Baseline 1D CNN detector)
+   - quantized_tflite/:
+       * deployed_model.tflite (Dynamic-range quantized edge model, 111 KB, 0.026 ms latency)
+       * model_dynamic_range.tflite, model_float16.tflite, model_float32.tflite, model_int8.tflite
+   - microcontroller_esp32/:
+       * model_data.h (C array header for ESP32 and ARM Cortex-M4 flash memory)
+
+3. presentation/
+   - Review_3_Presentation.pdf (Academic PDF presentation)
+   - Review_3_Presentation.pptx (Microsoft PowerPoint deck)
+
+4. reports/
+   - model_comparison.csv & model_comparison.md
+"""
+
+    # --- BUILD COMBINED ARCHIVE (fall_detection_project_artifacts.zip) ---
+    print(f"\n[1/2] Building combined archive: {combined_zip_path.name}...")
+    with zipfile.ZipFile(combined_zip_path, "w", compression=zipfile.ZIP_DEFLATED, compresslevel=6) as zf:
+        zf.writestr("README_MANIFEST.txt", manifest_text)
+        
+        # Add data_processed folder
+        for src_path, rel_path in data_files:
+            arcname = f"data_processed/{str(rel_path).replace(os.sep, '/')}"
+            zf.write(src_path, arcname=arcname)
+            
+        # Add models, presentations, reports
         for src_rel, arcname in model_files:
             src_path = repo_root / src_rel
             if src_path.exists():
                 zf.write(src_path, arcname=arcname)
-                size_kb = src_path.stat().st_size / 1024
-                print(f"  + {arcname} ({size_kb:,.1f} KB)")
-            else:
-                print(f"  ! Missing: {src_rel}")
 
-        # 3. Add root manifest & README
-        manifest_text = """FALL DETECTION PROJECT - COMPLETE ARTIFACT ARCHIVE
-==================================================
-Institution: Madras Institute of Technology, Anna University
-Course: IT5712 Project 1 (Academic Year 2023-2027)
+    comb_size = combined_zip_path.stat().st_size
+    print(f" -> Created {combined_zip_path.name}: {comb_size:,} bytes ({comb_size / (1024*1024):.2f} MB)")
 
-This archive contains:
-1. data/processed/
-   - Filtered and windowed numpy arrays (train, val, test, balanced sets)
-   - Feature scalers (scaler.pkl, severity_scaler.pkl)
-   - K-Means severity clustering artifacts
+    # --- BUILD DATA-ONLY ARCHIVE (data_processed.zip) ---
+    print(f"\n[2/2] Building standalone dataset archive: {data_only_zip_path.name}...")
+    with zipfile.ZipFile(data_only_zip_path, "w", compression=zipfile.ZIP_DEFLATED, compresslevel=6) as zf:
+        zf.writestr("README.txt", "Preprocessed SisFall dataset arrays and severity clustering models for IT5712 Project 1.\n")
+        for src_path, rel_path in data_files:
+            arcname = f"data/processed/{str(rel_path).replace(os.sep, '/')}"
+            zf.write(src_path, arcname=arcname)
 
-2. models/
-   - keras/: Dual-head multi-task CNN-LSTM, binary CNN-LSTM, 1D CNN baseline
-   - quantized_tflite/: Edge TFLite models (Dynamic-Range, Float16, Float32, INT8)
-   - microcontroller_esp32/: C array header (model_data.h) for embedded flash memory
+    data_size = data_only_zip_path.stat().st_size
+    print(f" -> Created {data_only_zip_path.name}: {data_size:,} bytes ({data_size / (1024*1024):.2f} MB)")
 
-3. presentation/
-   - Review_3_Presentation.pptx & Review_3_Presentation.pdf
-
-4. reports/
-   - Cross-model performance comparison tables and quantization benchmarks
-"""
-        zf.writestr("ARCHIVE_MANIFEST.txt", manifest_text)
-
-    total_size = zip_path.stat().st_size
-    print("\n" + "=" * 60)
-    print(f"Archive Created Successfully!")
-    print(f"Path: {zip_path}")
-    print(f"Size: {total_size:,} bytes ({total_size / (1024 * 1024):.2f} MB)")
-    print("=" * 60)
+    print("\n" + "=" * 65)
+    print("SUCCESS: All archives packaged and verified!")
+    print(f"1. Combined Artifacts: {combined_zip_path} ({comb_size / (1024*1024):.2f} MB)")
+    print(f"2. Data Only Archive:  {data_only_zip_path} ({data_size / (1024*1024):.2f} MB)")
+    print("=" * 65)
 
 if __name__ == "__main__":
-    create_complete_artifacts_zip()
+    package_artifacts()
