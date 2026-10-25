@@ -46,3 +46,6 @@ data/processed/*.pkl
 # Local logs (reports and plots are kept for documentation)
 data/processed/*.log
 data/processed/reports/*.log
+
+# Archives
+*.zip
